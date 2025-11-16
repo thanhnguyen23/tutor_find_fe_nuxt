@@ -3,7 +3,7 @@ import { useAuthCookie } from '~/composables/useAuthCookie'
 
 export const useApi = () => {
 	const config = useRuntimeConfig();
-	const BASE_URL = config.public.apiUrl || "http://127.0.0.1:8000";
+	const BASE_URL = config.public.apiUrl;
 	const TIMEOUT = 10000;
 	const authCookie = useAuthCookie();
 
