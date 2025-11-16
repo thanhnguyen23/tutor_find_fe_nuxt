@@ -10,10 +10,9 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 
 const router = useRouter();
-const store = useStore();
+const userStore = useUserStore();
 
 onMounted(() => {
   // Get token and user from URL query params
@@ -31,11 +30,8 @@ onMounted(() => {
 
   if (token && userJson) {
     try {
-      const user = JSON.parse(userJson);
-
       // Save token first
-      store.dispatch('updateToken', token);
-      console.log('thành', token);
+      userStore.setToken(token);
 
       // Redirect to home
       navigateTo('/');
