@@ -1033,48 +1033,6 @@ onMounted(() => {
     gap: 1rem;
 }
 
-/* Support Card */
-.support-content {
-    text-align: center;
-    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid rgba(99, 102, 241, 0.1);
-}
-
-.support-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.support-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    border-radius: 50%;
-    color: white;
-    box-shadow: 0 4px 12px var(--color-primary-light);
-}
-
-.support-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.support-desc {
-    font-size: 0.875rem;
-    color: #64748b;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .success-layout {

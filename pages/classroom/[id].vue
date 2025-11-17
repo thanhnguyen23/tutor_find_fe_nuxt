@@ -1111,6 +1111,7 @@ defineExpose({
     right: 1rem;
     bottom: 1rem;
     width: 22%;
+	height: 22%;
     max-width: 360px;
     min-width: 150px;
     z-index: 3;

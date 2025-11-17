@@ -74,11 +74,10 @@
             </div>
             <div class="action confirm-action-row">
                 <button class="btn-md  btn-secondary" @click="handleBack">Quay lại</button>
-                <button class="btn-md  btn-primary" @click="handleSubmit" :disabled="isSubmitting || isSelfBooking || !selectedPaymentMethod">
+                <button class="btn-md  btn-primary" @click="handleSubmit" :disabled="isSubmitting || !selectedPaymentMethod">
                     <span v-if="isSubmitting">Đang xử lý...</span>
                     <span v-else>Thanh toán và đặt lịch <i class="fas fa-arrow-right"></i></span>
                 </button>
-                <div v-if="isSelfBooking" class="alert alert-danger mt-2">Bạn không thể đặt lịch với chính mình!</div>
             </div>
         </div>
         <!-- Right Column giữ nguyên như các bước trước -->
@@ -236,9 +235,6 @@ const mobileUserInfoState = reactive({
 })
 const scrollTimer = ref(null)
 const isScrolling = ref(false)
-
-const myUid = computed(() => userStore.getUserData?.uid)
-const isSelfBooking = computed(() => props.tutorInfo?.uid === myUid.value)
 
 const paymentMethods = computed(() => configStore.configuration.payment_methods || [])
 
@@ -871,7 +867,7 @@ onUnmounted(() => {
     }
 
     .confirm-info-grid {
-        margin: 0 1.25rem 1.25rem 1.25rem;
+        margin: 0;
         padding: 1.25rem;
     }
 
