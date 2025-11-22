@@ -1,17 +1,9 @@
 <template>
     <div class="base-select" :class="{ 'is-open': isOpen, 'width-full': widthFull }" ref="selectContainer">
-        <div v-if="label" class="label-group" :class="{
-            'label-small': size === 'small',
-            'label-base': size === 'base',
-            'label-medium': size === 'medium',
-            'label-large': size === 'large'
-        }">
-            <label>{{ label }}</label>
-            <span v-if="required" class="required">*</span>
-        </div>
+
         <div
             class="select-button"
-            :class="[customClass, sizeClass, { 'error': showError }]"
+            :class="[customClass, sizeClass, { 'error': showError, 'has-floating-label': !!label, 'with-icon': $slots.icon }]"
             @click="toggleDropdown"
             ref="buttonRef"
         >
@@ -19,8 +11,13 @@
                 <div v-if="$slots.icon" class="icon-wrapper">
                     <slot name="icon"></slot>
                 </div>
-                <span>{{ displayValue || placeholder }}</span>
+                <span v-if="displayValue" class="selected-value">{{ displayValue }}</span>
+                <span v-else class="placeholder-text">{{ placeholder }}</span>
             </div>
+            
+            <label v-if="label" class="floating-label" :class="{ 'float': isOpen || displayValue || displayValue === 0 || (placeholder && placeholder.trim() !== '') }">
+                {{ label }} <span v-if="required" class="required">*</span>
+            </label>
             <svg class="icon-md dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -42,7 +39,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <input type="text" v-model="searchQuery" :placeholder="searchPlaceholder">
+                    <input type="text" v-model="searchQuery" :placeholder="searchPlaceholder" ref="searchInput">
                 </div>
                 <div class="select-list format-scrollbar">
                     <div v-for="option in filteredOptions"
@@ -121,6 +118,7 @@ const isOpen = ref(false);
 const searchQuery = ref('');
 const selectContainer = ref(null);
 const buttonRef = ref(null);
+const searchInput = ref(null);
 const dropdownStyle = ref({});
 const isTouched = ref(false);
 
@@ -134,7 +132,6 @@ const sizeClass = computed(() => {
 });
 
 const displayValue = computed(() => {
-    if (!props.modelValue) return '';
     const option = props.options.find(opt => opt.id == props.modelValue || opt.value == props.modelValue);
     return option ? (option.name || option.label) : '';
 });
@@ -279,6 +276,9 @@ watch(isOpen, (newVal) => {
     if (newVal) {
         nextTick(() => {
             updateDropdownPosition();
+            if (props.type === 'search' && searchInput.value) {
+                searchInput.value.focus();
+            }
         });
     }
 });
@@ -301,26 +301,42 @@ onUnmounted(() => {
     width: 100%;
 }
 
-.label-group {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 0.5rem;
-}
 
-.label-group label {
-    display: block;
-    font-weight: 600;
-    color: #374151;
-    display: flex;
-    align-items: center;
-    font-size: var(--font-size-base);
-}
 
 .required {
     color: #ef4444;
     font-weight: 700;
     line-height: normal;
+}
+
+/* Floating Label Styles */
+.select-button.has-floating-label {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+    min-height: 3.5rem;
+}
+
+.floating-label {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    transform-origin: left top;
+    z-index: 1;
+}
+
+.floating-label.float {
+    top: 0.5rem;
+    transform: translateY(0) scale(0.85);
+}
+
+.select-button.has-floating-label.with-icon .floating-label {
+    left: 2.7rem;
 }
 
 .base-select {
@@ -330,6 +346,7 @@ onUnmounted(() => {
 .select-button {
     width: 100%;
     padding: 0.75rem 1rem;
+	padding-right: 2.5rem !important;
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border: 2px solid #e5e7eb;
     border-radius: 12px;
@@ -378,6 +395,10 @@ onUnmounted(() => {
 }
 
 .select-button .dropdown-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: #6b7280;
 }
@@ -388,25 +409,25 @@ onUnmounted(() => {
 }
 
 .select-small {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem;
     height: 2.75rem;
     font-size: var(--font-size-small);
 }
 
 .select-base {
-    padding: 0.65rem 0.75rem;
+    padding: 0.65rem;
     height: 2.75rem;
     font-size: var(--font-size-small);
 }
 
 .select-medium {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem;
     height: 3.1rem;
     font-size: var(--font-size-base);
 }
 
 .select-large {
-    padding: 1rem 1.25rem;
+    padding: 1rem;
     height: 3.5rem;
     font-size: var(--font-size-base);
 }

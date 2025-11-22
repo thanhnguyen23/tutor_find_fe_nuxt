@@ -11,10 +11,13 @@ const { api } = useApi();
 const { success, error: notifyError } = useNotification();
 const { formatDate } = useHelper();
 
-const notifications = ref([]);
-const meta = ref(null);
+const isLoading = ref(false);
+const notifications = ref({
+	data: [],
+	meta: null,
+	countNotRead: 0,
+});
 const activeTab = ref('all');
-const countNotRead = ref(0);
 const tabs = computed(() => [
     {
         value: 'all',
@@ -23,7 +26,7 @@ const tabs = computed(() => [
     {
         value: 'unread',
         label: 'Chưa đọc',
-        count: countNotRead.value
+        count: notifications.value.countNotRead
     },
     {
         value: 'read',
@@ -53,14 +56,19 @@ const fetchNotifications = async (page = 1) => {
     }
 
     try {
-        const response = await api.apiGet('notifications', params);
-    countNotRead.value = response.count_not_read || 0;
-    notifications.value = response.data || [];
-    meta.value = response.meta || null;
+		isLoading.value = true;
+		const response = await api.apiGet('notifications', params);
+
+		notifications.value = {
+			data: response.data || [],
+			meta: response.meta || null,
+			countNotRead: response.count_not_read || 0,
+		};
     } catch (error) {
-        console.error('Failed to load notifications', error);
         notifyError('Không thể tải danh sách thông báo');
-    }
+    } finally {
+		isLoading.value = false;
+	}
 };
 
 // Xử lý chuyển trang
@@ -72,7 +80,7 @@ const handleChangePage = (page) => {
 const markAllAsRead = async () => {
     try {
         await api.apiPost('notifications/mark-all-read');
-    await fetchNotifications(meta.value?.current_page || 1);
+    await fetchNotifications(notifications.value.meta?.current_page || 1);
         success('Đã đánh dấu tất cả là đã đọc!');
     } catch (error) {
         notifyError('Không thể cập nhật trạng thái thông báo');
@@ -83,7 +91,7 @@ const markAllAsRead = async () => {
 const markNotificationAsRead = async (id) => {
     try {
         await api.apiPost(`notifications/${id}/mark-read`);
-    await fetchNotifications(meta.value?.current_page || 1);
+    await fetchNotifications(notifications.value.meta?.current_page || 1);
     } catch (error) {
         notifyError('Không thể đánh dấu thông báo này');
     }
@@ -107,17 +115,17 @@ const getNotificationIcon = (notification) => {
     <div class="container">
         <div class="nav-tabs">
             <base-status-tabs v-model="activeTab" :tabs="tabs" />
-            <button class="btn-md btn-secondary w-max mark-all_read" @click="markAllAsRead" v-if="countNotRead > 0">
+            <button class="btn-md btn-secondary w-max mark-all_read" @click="markAllAsRead" v-if="notifications.countNotRead > 0">
                 <svg class="icon-sm" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 7 17l-5-5"></path>
                     <path d="m22 10-7.5 7.5L13 16"></path>
                 </svg>
-                Đánh dấu tất cả là đã đọc ({{ countNotRead }})
+                Đánh dấu tất cả là đã đọc ({{ notifications.countNotRead }})
             </button>
         </div>
 
         <div class="content-main">
-            <div v-if="!notifications || notifications.length === 0" class="notification-empty">
+            <div v-if="!notifications.data || notifications.data.length === 0" class="notification-empty">
                 <svg class="icon-lg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10 2h4"/>
                     <path d="M12 14v-4"/>
@@ -133,7 +141,7 @@ const getNotificationIcon = (notification) => {
                 <div class="notification-empty-sub">Khi có cập nhật mới, thông báo sẽ hiển thị tại đây.</div>
             </div>
             <div v-else class="notification-list">
-                <div v-for="notification in notifications" :key="notification.id" class="notification-card" :class="{ 'is-read': notification.is_read }" @click="markNotificationAsRead(notification.id)">
+                <div v-for="notification in notifications.data" :key="notification.id" class="notification-card" :class="{ 'is-read': notification.is_read }" @click="markNotificationAsRead(notification.id)">
                     <div class="notification-header">
                         <div class="notification-left">
                             <div class="icon-wrapper">
@@ -177,7 +185,7 @@ const getNotificationIcon = (notification) => {
                     </div>
                 </div>
             </div>
-            <base-pagination v-if="meta" :meta="meta" @changePage="handleChangePage" />
+            <base-pagination v-if="notifications.meta" :meta="notifications.meta" @changePage="handleChangePage" />
         </div>
     </div>
 </div>

@@ -11,7 +11,7 @@
 // const route = useRoute();
 // const isLoading = ref(false);
 // const showNotificationPreview = ref(false);
-// const unreadData = computed(() => userStore.unreadData);
+// const unreadData = computed(() => notificationStore.getUnreadData);
 // const hiddenNotificationPreview = computed(() => notificationStore.hiddenNotificationPreview);
 // const isAuthenticated = computed(() => userStore.isAuthenticated);
 
@@ -28,8 +28,7 @@
 //     try {
 //         const response = await api.apiGet('unread');
 //         if (response.success) {
-//             unreadData.value = response.data;
-//             userStore.setUnreadData(response.data);
+//             notificationStore.setUnreadData(response.data);
 //         }
 //     } catch (error) {
 //         console.error('Error fetching unread data:', error);

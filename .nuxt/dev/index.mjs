@@ -3,7 +3,7 @@ import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, getResponseStatusText } from 'file://C:/Users/ADMIN/tutor_find_fe_nuxt/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setCookie, getResponseStatusText } from 'file://C:/Users/ADMIN/tutor_find_fe_nuxt/node_modules/h3/dist/index.mjs';
 import { escapeHtml } from 'file://C:/Users/ADMIN/tutor_find_fe_nuxt/node_modules/@vue/shared/dist/shared.cjs.js';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file://C:/Users/ADMIN/tutor_find_fe_nuxt/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file://C:/Users/ADMIN/tutor_find_fe_nuxt/node_modules/ufo/dist/index.mjs';
@@ -650,10 +650,10 @@ const _inlineRuntimeConfig = {
   },
   "public": {
     "apiUrl": "http://127.0.0.1:8000",
-    "apiBaseUrl": "http://127.0.0.1:8000",
+    "apiBaseUrl": "",
     "pusherAppKey": "561b3dcff3a18d2342e3",
     "pusherAppCluster": "ap1",
-    "pusherHost": "",
+    "pusherHost": "443",
     "pusherPort": "",
     "baseUrl": "http://localhost:3000"
   }
@@ -1868,10 +1868,14 @@ async function getIslandContext(event) {
   return ctx;
 }
 
+const _lazy_TnU7Tt = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_48xP_s = () => Promise.resolve().then(function () { return register_post$1; });
 const _lazy_O_i3JT = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
   { route: '', handler: _jZ3xbn, lazy: false, middleware: true, method: undefined },
+  { route: '/api/login', handler: _lazy_TnU7Tt, lazy: true, middleware: false, method: "post" },
+  { route: '/api/register', handler: _lazy_48xP_s, lazy: true, middleware: false, method: "post" },
   { route: '/__nuxt_error', handler: _lazy_O_i3JT, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_O_i3JT, lazy: true, middleware: false, method: undefined }
@@ -2203,6 +2207,60 @@ const styles = {};
 const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: styles
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const login_post = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  const body = await readBody(event);
+  try {
+    const response = await $fetch(`${config.public.apiUrl}/api/auth/login`, {
+      method: "POST",
+      body
+    });
+    if (response == null ? void 0 : response.token) {
+      setCookie(event, "token", response.token, {
+        maxAge: 60 * 60 * 24 * 7,
+        // 1 week
+        path: "/"
+        // httpOnly: false // Allow client-side access for useApi
+      });
+    }
+    return response;
+  } catch (error) {
+    return error;
+  }
+});
+
+const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: login_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const register_post = defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  const body = await readBody(event);
+  try {
+    const response = await $fetch(`${config.public.apiUrl}/api/auth/register`, {
+      method: "POST",
+      body
+    });
+    if (response == null ? void 0 : response.token) {
+      setCookie(event, "token", response.token, {
+        maxAge: 60 * 60 * 24 * 7,
+        // 1 week
+        path: "/"
+        // httpOnly: false // Allow client-side access for useApi
+      });
+    }
+    return response;
+  } catch (error) {
+    return error;
+  }
+});
+
+const register_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: register_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 function renderPayloadResponse(ssrContext) {

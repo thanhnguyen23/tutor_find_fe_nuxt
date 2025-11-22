@@ -27,7 +27,11 @@ export function useFormValidation() {
             const { error: notifyError } = useNotification();
             notifyError('Vui lòng kiểm tra lại thông tin!');
             return true;
-        }
+        } else if (error.data.data) {
+			const { error: notifyError } = useNotification();
+			notifyError(error.data.data.message);
+			return true;
+		}
 
         // Show error message for non-validation errors
         const errorMessage = error?.response?.data?.message || error?.message || defaultMessage;

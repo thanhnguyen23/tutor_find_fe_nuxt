@@ -14,6 +14,7 @@ type HydrationStrategies = {
 type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 
+export const AdvancedFilterModal: typeof import("../components/common/AdvancedFilterModal.vue")['default']
 export const BaseDatePicker: typeof import("../components/common/BaseDatePicker.vue")['default']
 export const BaseInput: typeof import("../components/common/BaseInput.vue")['default']
 export const BaseLoading: typeof import("../components/common/BaseLoading.vue")['default']
@@ -44,6 +45,13 @@ export const ProfileOverviewNew: typeof import("../components/profile/OverviewNe
 export const ProfileInfoNew: typeof import("../components/profile/ProfileInfoNew.vue")['default']
 export const ProfileScheduleNew: typeof import("../components/profile/ScheduleNew.vue")['default']
 export const ProfileWalletBalance: typeof import("../components/profile/WalletBalance.vue")['default']
+export const SettingsGlobalPreferences: typeof import("../components/settings/GlobalPreferences.vue")['default']
+export const SettingsLoginSecurity: typeof import("../components/settings/LoginSecurity.vue")['default']
+export const SettingsNotifications: typeof import("../components/settings/Notifications.vue")['default']
+export const SettingsPayments: typeof import("../components/settings/Payments.vue")['default']
+export const SettingsPersonalInfo: typeof import("../components/settings/PersonalInfo.vue")['default']
+export const SettingsPrivacy: typeof import("../components/settings/Privacy.vue")['default']
+export const SettingsTaxes: typeof import("../components/settings/Taxes.vue")['default']
 export const UserDetailOverviewTab: typeof import("../components/userDetail/OverviewTab.vue")['default']
 export const UserDetailReviewsTab: typeof import("../components/userDetail/ReviewsTab.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
@@ -69,6 +77,7 @@ export const Head: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Html']
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
+export const LazyAdvancedFilterModal: LazyComponent<typeof import("../components/common/AdvancedFilterModal.vue")['default']>
 export const LazyBaseDatePicker: LazyComponent<typeof import("../components/common/BaseDatePicker.vue")['default']>
 export const LazyBaseInput: LazyComponent<typeof import("../components/common/BaseInput.vue")['default']>
 export const LazyBaseLoading: LazyComponent<typeof import("../components/common/BaseLoading.vue")['default']>
@@ -99,6 +108,13 @@ export const LazyProfileOverviewNew: LazyComponent<typeof import("../components/
 export const LazyProfileInfoNew: LazyComponent<typeof import("../components/profile/ProfileInfoNew.vue")['default']>
 export const LazyProfileScheduleNew: LazyComponent<typeof import("../components/profile/ScheduleNew.vue")['default']>
 export const LazyProfileWalletBalance: LazyComponent<typeof import("../components/profile/WalletBalance.vue")['default']>
+export const LazySettingsGlobalPreferences: LazyComponent<typeof import("../components/settings/GlobalPreferences.vue")['default']>
+export const LazySettingsLoginSecurity: LazyComponent<typeof import("../components/settings/LoginSecurity.vue")['default']>
+export const LazySettingsNotifications: LazyComponent<typeof import("../components/settings/Notifications.vue")['default']>
+export const LazySettingsPayments: LazyComponent<typeof import("../components/settings/Payments.vue")['default']>
+export const LazySettingsPersonalInfo: LazyComponent<typeof import("../components/settings/PersonalInfo.vue")['default']>
+export const LazySettingsPrivacy: LazyComponent<typeof import("../components/settings/Privacy.vue")['default']>
+export const LazySettingsTaxes: LazyComponent<typeof import("../components/settings/Taxes.vue")['default']>
 export const LazyUserDetailOverviewTab: LazyComponent<typeof import("../components/userDetail/OverviewTab.vue")['default']>
 export const LazyUserDetailReviewsTab: LazyComponent<typeof import("../components/userDetail/ReviewsTab.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>

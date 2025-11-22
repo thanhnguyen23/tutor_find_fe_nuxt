@@ -1,5 +1,5 @@
 <template>
-    <base-modal v-if="isOpen" :isOpen="isOpen" @close="closeModal" size="small" title="Gửi tin nhắn">
+    <base-modal v-if="isOpen" :isOpen="isOpen" @close="closeModal" size="small" title="Gửi tin nhắn" description="Gửi tin nhắn nếu bạn muốn liên hệ với người dùng">
         <div class="send-message">
             <div class="user-info">
                 <img :src="user?.avatar" class="avatar">

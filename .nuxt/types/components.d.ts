@@ -14,6 +14,7 @@ type HydrationStrategies = {
 type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 interface _GlobalComponents {
+  'AdvancedFilterModal': typeof import("../../components/common/AdvancedFilterModal.vue")['default']
   'BaseDatePicker': typeof import("../../components/common/BaseDatePicker.vue")['default']
   'BaseInput': typeof import("../../components/common/BaseInput.vue")['default']
   'BaseLoading': typeof import("../../components/common/BaseLoading.vue")['default']
@@ -44,6 +45,13 @@ interface _GlobalComponents {
   'ProfileInfoNew': typeof import("../../components/profile/ProfileInfoNew.vue")['default']
   'ProfileScheduleNew': typeof import("../../components/profile/ScheduleNew.vue")['default']
   'ProfileWalletBalance': typeof import("../../components/profile/WalletBalance.vue")['default']
+  'SettingsGlobalPreferences': typeof import("../../components/settings/GlobalPreferences.vue")['default']
+  'SettingsLoginSecurity': typeof import("../../components/settings/LoginSecurity.vue")['default']
+  'SettingsNotifications': typeof import("../../components/settings/Notifications.vue")['default']
+  'SettingsPayments': typeof import("../../components/settings/Payments.vue")['default']
+  'SettingsPersonalInfo': typeof import("../../components/settings/PersonalInfo.vue")['default']
+  'SettingsPrivacy': typeof import("../../components/settings/Privacy.vue")['default']
+  'SettingsTaxes': typeof import("../../components/settings/Taxes.vue")['default']
   'UserDetailOverviewTab': typeof import("../../components/userDetail/OverviewTab.vue")['default']
   'UserDetailReviewsTab': typeof import("../../components/userDetail/ReviewsTab.vue")['default']
   'NuxtWelcome': typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']
@@ -69,6 +77,7 @@ interface _GlobalComponents {
   'Html': typeof import("../../node_modules/nuxt/dist/head/runtime/components")['Html']
   'Body': typeof import("../../node_modules/nuxt/dist/head/runtime/components")['Body']
   'NuxtIsland': typeof import("../../node_modules/nuxt/dist/app/components/nuxt-island")['default']
+  'LazyAdvancedFilterModal': LazyComponent<typeof import("../../components/common/AdvancedFilterModal.vue")['default']>
   'LazyBaseDatePicker': LazyComponent<typeof import("../../components/common/BaseDatePicker.vue")['default']>
   'LazyBaseInput': LazyComponent<typeof import("../../components/common/BaseInput.vue")['default']>
   'LazyBaseLoading': LazyComponent<typeof import("../../components/common/BaseLoading.vue")['default']>
@@ -99,6 +108,13 @@ interface _GlobalComponents {
   'LazyProfileInfoNew': LazyComponent<typeof import("../../components/profile/ProfileInfoNew.vue")['default']>
   'LazyProfileScheduleNew': LazyComponent<typeof import("../../components/profile/ScheduleNew.vue")['default']>
   'LazyProfileWalletBalance': LazyComponent<typeof import("../../components/profile/WalletBalance.vue")['default']>
+  'LazySettingsGlobalPreferences': LazyComponent<typeof import("../../components/settings/GlobalPreferences.vue")['default']>
+  'LazySettingsLoginSecurity': LazyComponent<typeof import("../../components/settings/LoginSecurity.vue")['default']>
+  'LazySettingsNotifications': LazyComponent<typeof import("../../components/settings/Notifications.vue")['default']>
+  'LazySettingsPayments': LazyComponent<typeof import("../../components/settings/Payments.vue")['default']>
+  'LazySettingsPersonalInfo': LazyComponent<typeof import("../../components/settings/PersonalInfo.vue")['default']>
+  'LazySettingsPrivacy': LazyComponent<typeof import("../../components/settings/Privacy.vue")['default']>
+  'LazySettingsTaxes': LazyComponent<typeof import("../../components/settings/Taxes.vue")['default']>
   'LazyUserDetailOverviewTab': LazyComponent<typeof import("../../components/userDetail/OverviewTab.vue")['default']>
   'LazyUserDetailReviewsTab': LazyComponent<typeof import("../../components/userDetail/ReviewsTab.vue")['default']>
   'LazyNuxtWelcome': LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']>

@@ -184,7 +184,7 @@ const { data: helpData, pending: isLoading, refresh: refreshHelpData } = await u
         }
     },
     {
-        server: false,
+        server: true,
         lazy: false,
         watch: [userType]
     }

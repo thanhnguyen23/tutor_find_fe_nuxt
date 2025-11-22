@@ -35,8 +35,6 @@ const emit = defineEmits(['next', 'back'])
 // ============================
 // Reactive state
 // ============================
-const myUid = computed(() => userStore.getUserData?.uid)
-const isSelfBooking = computed(() => props.tutorInfo?.uid === myUid.value)
 // Main booking data - using reactive for better performance
 const bookingData = reactive({
     subject: {
@@ -540,11 +538,9 @@ defineExpose({
             <div class="action">
                 <button class="btn-md  btn-secondary" @click="handleBack"><i class="fas fa-arrow-left"></i> Quay lại</button>
 
-                <button class="btn-md  btn-primary" @click="handleNext" :disabled="isSelfBooking">
+                <button class="btn-md  btn-primary" @click="handleNext">
                     Tiếp tục <i class="fas fa-arrow-right"></i>
                 </button>
-
-                <div v-if="isSelfBooking" class="alert alert-danger mt-2">Bạn không thể đặt lịch với chính mình!</div>
             </div>
         </div>
 
@@ -649,33 +645,20 @@ defineExpose({
 
     <div class="user-info_mobile_action">
         <button class="btn-sm btn-secondary" @click="handleBack"><i class="fas fa-arrow-left"></i> Quay lại</button>
-        <button class="btn-sm btn-primary" @click="handleNext" :disabled="isSelfBooking">Tiếp tục <i class="fas fa-arrow-right"></i></button>
+        <button class="btn-sm btn-primary" @click="handleNext">Tiếp tục <i class="fas fa-arrow-right"></i></button>
     </div>
 </div>
 
-<base-modal :isOpen="uiState.showEditModal" title="Chỉnh sửa thông tin buổi học" @close="handleModalClose" size="xl">
+<base-modal :isOpen="uiState.showEditModal" title="Chỉnh sửa thông tin buổi học" description="Chỉnh sửa thông tin buổi học để phù hợp với nhu cầu của bạn" @close="handleModalClose" size="xl">
     <form @submit.prevent="handleEditSave">
         <div class="edit-grid">
             <base-date-picker v-model="editForm.date" class="col-span-2" />
 
             <div class="separation-2 col-span-2"></div>
 
-			<base-select v-model="editForm.subjectId" :options="subjectOptions" label="Môn học" placeholder="Chọn môn học" @update:modelValue="onEditSubjectChange" :required="true">
-                <template #icon>
-                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                </template>
-            </base-select>
+			<base-select v-model="editForm.subjectId" :options="subjectOptions" label="Môn học" placeholder="Chọn môn học" @update:modelValue="onEditSubjectChange" :required="true"></base-select>
 
-            <base-select v-model="editForm.levelId" :options="editLevelOptions" label="Cấp độ" placeholder="Chọn cấp độ" :disabled="!editForm.subjectId" @update:modelValue="onEditLevelChange" :required="true">
-                <template #icon>
-                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                    </svg>
-                </template>
-            </base-select>
+            <base-select v-model="editForm.levelId" :options="editLevelOptions" label="Cấp độ" placeholder="Chọn cấp độ" :disabled="!editForm.subjectId" @update:modelValue="onEditLevelChange" :required="true"></base-select>
 
 			<div class="separation-2 col-span-2"></div>
 

@@ -340,7 +340,7 @@
 </div>
 
 <!-- Modal: Thêm học vấn -->
-<base-modal :is-open="showAddEducationModal" title="Thêm học vấn" size="medium" @close="showAddEducationModal = false">
+<base-modal :is-open="showAddEducationModal" title="Thêm học vấn" description="Nơi bạn từng học hoặc đã học" size="medium" @close="showAddEducationModal = false">
     <div class="modal-content">
         <base-input
 
@@ -348,40 +348,21 @@
             label="Tên trường/viện"
             placeholder="Nhập tên trường"
             :error="formErrors.school_name"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="newEducation.major"
             label="Bằng cấp/Chuyên ngành"
             placeholder="Nhập ngành học"
             :error="formErrors.major"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="newEducation.time"
             label="Thời gian"
             placeholder="VD: 2020-2024"
             :error="formErrors.time"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="newEducation.description"
@@ -448,47 +429,28 @@
 </base-modal>
 
 <!-- Modal: Sửa học vấn -->
-<base-modal :is-open="showEditEducationModal" title="Chỉnh sửa học vấn" size="medium" @close="showEditEducationModal = false">
+<base-modal :is-open="showEditEducationModal" title="Chỉnh sửa học vấn" description="Nơi bạn từng học hoặc đã học" size="medium" @close="showEditEducationModal = false">
     <div class="modal-content">
         <base-input
 
             v-model="userDataAction.education.school_name"
             label="Tên trường/viện"
             placeholder="Nhập tên trường"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="userDataAction.education.major"
             label="Bằng cấp/Chuyên ngành"
             placeholder="Nhập ngành học"
             :error="formErrors.major"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="userDataAction.education.time"
             label="Thời gian"
             placeholder="VD: 2020-2024"
             :error="formErrors.time"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="userDataAction.education.description"
@@ -544,10 +506,8 @@
                 <span>Hủy</span>
             </button>
             <button class="btn-md btn-primary" @click="updateEducation" :disabled="!isValidEditEducationInput">
-                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                    <polyline points="7,3 7,8 15,8"></polyline>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
                 </svg>
                 <span>Lưu thay đổi</span>
             </button>
@@ -556,7 +516,7 @@
 </base-modal>
 
 <!-- Modal: Thêm kinh nghiệm -->
-<base-modal :is-open="showAddExperienceModal" title="Thêm kinh nghiệm" size="medium" @close="showAddExperienceModal = false">
+<base-modal :is-open="showAddExperienceModal" title="Thêm kinh nghiệm" description="Kinh nghiệm là kinh nghiệm bạn có trong lĩnh vực dạy hoặc học" size="medium" @close="showAddExperienceModal = false">
     <div class="modal-content">
         <base-input
 
@@ -564,39 +524,21 @@
             label="Tên tổ chức/trường học"
             placeholder="Nhập tên tổ chức"
             :error="formErrors.name"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="newExperience.position"
             label="Vị trí công việc"
             placeholder="Nhập vị trí công việc"
             :error="formErrors.position"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="newExperience.time"
             label="Thời gian"
             placeholder="VD: 2020-2024"
             :error="formErrors.time"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="newExperience.description"
@@ -626,7 +568,7 @@
 </base-modal>
 
 <!-- Modal: Sửa kinh nghiệm -->
-<base-modal :is-open="showEditExperienceModal" title="Chỉnh sửa kinh nghiệm" size="medium" @close="showEditExperienceModal = false">
+<base-modal :is-open="showEditExperienceModal" title="Chỉnh sửa kinh nghiệm" description="Kinh nghiệm là kinh nghiệm bạn có trong lĩnh vực dạy hoặc học" size="medium" @close="showEditExperienceModal = false">
     <div class="modal-content">
         <base-input
 
@@ -634,39 +576,21 @@
             label="Tên trường/viện"
             placeholder="Nhập tên trường"
             :error="formErrors.name"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="userDataAction.experience.position"
             label="Vị trí công việc"
             placeholder="Nhập vị trí công việc"
             :error="formErrors.position"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="userDataAction.experience.time"
             label="Thời gian"
             placeholder="VD: 2020-2024"
             :error="formErrors.time"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
         <base-input
 
             v-model="userDataAction.experience.description"
@@ -685,10 +609,8 @@
                 <span>Hủy</span>
             </button>
             <button class="btn-md btn-primary" @click="updateExperience" :disabled="!isValidEditExperienceInput">
-                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                    <polyline points="7,3 7,8 15,8"></polyline>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
                 </svg>
                 <span>Lưu thay đổi</span>
             </button>
@@ -697,7 +619,7 @@
 </base-modal>
 
 <!-- Modal: Thêm môn học -->
-<base-modal :is-open="showAddSubjectModal" title="Thêm môn học" size="medium" @close="showAddSubjectModal = false">
+<base-modal :is-open="showAddSubjectModal" title="Thêm môn học" description="Môn học là môn học bạn muốn dạy hoặc học" size="medium" @close="showAddSubjectModal = false">
     <div class="modal-content">
         <base-select
 
@@ -708,13 +630,7 @@
             placeholder="Chọn môn học"
             search-placeholder="Tìm kiếm môn học..."
             :error="formErrors.subject_id"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            </template>
-        </base-select>
+        ></base-select>
         <base-input
 
             v-model="newSubject.years_of_experience"
@@ -726,13 +642,7 @@
             :step="0.5"
             required
             :error="formErrors.years_of_experience"
-        >
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </template>
-        </base-input>
+        ></base-input>
 
         <div class="level-group">
             <label>Cấp độ dạy và học phí</label>
@@ -746,13 +656,7 @@
                         <div class="level-name">{{ level.name }}</div>
                     </div>
                     <base-input
-                         v-model="level.price" type="number" placeholder="Nhập học phí" unit="đ/giờ" :min="0" :step="1" :disabled="!selectedLevelsOfSubject.includes(level.id)">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                         v-model="level.price" type="number" placeholder="Nhập học phí" unit="đ/giờ" :min="0" :step="1" :disabled="!selectedLevelsOfSubject.includes(level.id)"></base-input>
                 </div>
             </div>
         </div>
@@ -777,23 +681,11 @@
 </base-modal>
 
 <!-- Modal: Chỉnh sửa môn học -->
-<base-modal :is-open="showEditSubjectModal" title="Chỉnh sửa môn học" size="medium" @close="showEditSubjectModal = false">
+<base-modal :is-open="showEditSubjectModal" title="Chỉnh sửa môn học" description="Môn học là môn học bạn muốn dạy hoặc học" size="medium" @close="showEditSubjectModal = false">
     <div class="modal-content">
-        <base-select  v-model="userDataAction.subject.subject_id" :options="listSubjects" label="Chọn môn học" type="search" placeholder="Chọn môn học" search-placeholder="Tìm kiếm môn học...">
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            </template>
-        </base-select>
+        <base-select  v-model="userDataAction.subject.subject_id" :options="listSubjects" label="Chọn môn học" type="search" placeholder="Chọn môn học" search-placeholder="Tìm kiếm môn học..."></base-select>
         <base-input
-             v-model="userDataAction.subject.years_of_experience" type="number" label="Số năm kinh nghiệm" placeholder="Nhập số năm kinh nghiệm" unit="năm" :min="0" :step="0.5" required>
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </template>
-        </base-input>
+             v-model="userDataAction.subject.years_of_experience" type="number" label="Số năm kinh nghiệm" placeholder="Nhập số năm kinh nghiệm" unit="năm" :min="0" :step="0.5" required></base-input>
 
         <div class="level-group">
             <label>Cấp độ dạy và học phí</label>
@@ -807,13 +699,7 @@
                         <div class="level-name">{{ level.name }}</div>
                     </div>
                     <base-input
-                         v-model="level.price" type="number" placeholder="Nhập học phí" unit="đ/giờ" :min="0" :step="1" :disabled="!selectedLevelsOfSubject.includes(level.id)">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                         v-model="level.price" type="number" placeholder="Nhập học phí" unit="đ/giờ" :min="0" :step="1" :disabled="!selectedLevelsOfSubject.includes(level.id)"></base-input>
                 </div>
             </div>
         </div>
@@ -839,22 +725,11 @@
 </base-modal>
 
 <!-- Modal: Thêm ngôn ngữ -->
-<base-modal :is-open="showAddLanguageModal" title="Thêm ngôn ngữ" size="medium" @close="showAddLanguageModal = false">
+<base-modal :is-open="showAddLanguageModal" title="Thêm ngôn ngữ" description="Ngôn ngữ là ngôn ngữ bạn muốn dạy hoặc học" size="medium" @close="showAddLanguageModal = false">
     <div class="modal-content">
-        <base-select  v-model="newLanguage.language_id" :options="languageOptions" label="Ngôn ngữ" placeholder="Chọn ngôn ngữ">
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                </svg>
-            </template>
-        </base-select>
-        <base-select  v-model="newLanguage.level_language_id" :options="levelOptions" label="Trình độ" placeholder="Chọn trình độ">
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-            </template>
-        </base-select>
+        <base-select  v-model="newLanguage.language_id" :options="languageOptions" label="Ngôn ngữ" placeholder="Chọn ngôn ngữ"></base-select>
+        <base-select  v-model="newLanguage.level_language_id" :options="levelOptions" label="Trình độ" placeholder="Chọn trình độ"></base-select>
+        <base-select  v-model="newLanguage.level_language_id" :options="levelOptions" label="Trình độ" placeholder="Chọn trình độ"></base-select>
         <div class="form-group">
             <label class="checkbox-label">
                 <input type="checkbox" v-model="newLanguage.is_native">
@@ -881,22 +756,11 @@
 </base-modal>
 
 <!-- Modal: Sửa ngôn ngữ -->
-<base-modal :is-open="showEditLanguageModal" title="Chỉnh sửa ngôn ngữ" size="medium" @close="showEditLanguageModal = false">
+<base-modal :is-open="showEditLanguageModal" title="Chỉnh sửa ngôn ngữ" description="Ngôn ngữ là ngôn ngữ bạn muốn dạy hoặc học" size="medium" @close="showEditLanguageModal = false">
     <div class="modal-content">
-        <base-select  v-model="selectedLanguage.language_id" :options="languageOptions" label="Ngôn ngữ" placeholder="Chọn ngôn ngữ">
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                </svg>
-            </template>
-        </base-select>
-        <base-select  v-model="selectedLanguage.level_language_id" :options="levelOptions" label="Trình độ" placeholder="Chọn trình độ">
-            <template #icon>
-                <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-            </template>
-        </base-select>
+        <base-select  v-model="selectedLanguage.language_id" :options="languageOptions" label="Ngôn ngữ" placeholder="Chọn ngôn ngữ"></base-select>
+        <base-select  v-model="selectedLanguage.level_language_id" :options="levelOptions" label="Trình độ" placeholder="Chọn trình độ"></base-select>
+        <base-select  v-model="selectedLanguage.level_language_id" :options="levelOptions" label="Trình độ" placeholder="Chọn trình độ"></base-select>
         <div class="form-group">
             <label class="checkbox-label">
                 <input type="checkbox" v-model="selectedLanguage.is_native">

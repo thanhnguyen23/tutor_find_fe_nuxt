@@ -1,69 +1,56 @@
 import axios from 'axios';
-import { useCookie } from 'nuxt/app';
+import { useAuthCookie } from '~/composables/useAuthCookie'
+
 export const useApi = () => {
 	const config = useRuntimeConfig();
 	const BASE_URL = config.public.apiUrl;
-	const TIMEOUT = 10000;
+	const authCookie = useAuthCookie();
 
-	const axiosInstance = axios.create({
-		baseURL: BASE_URL,
-		headers: {
-			'Content-Type': 'application/json',
+	// Get auth token from storage
+	const getAuthToken = () => {
+		return useCookie('token').value;
+	};
+
+	// Helper to create fetch options
+	const createFetchOptions = (method, data = null, customHeaders = {}) => {
+		const token = getAuthToken();
+		const headers = {
 			'Accept': 'application/json',
-			'X-Requested-With': 'XMLHttpRequest',
-		},
-		timeout: 10000,
-		withCredentials: true,
-	})
+			...customHeaders
+		};
 
-	axiosInstance.defaults.xsrfCookieName = 'XSRF-TOKEN'
-	axiosInstance.defaults.xsrfHeaderName = 'X-XSRF-TOKEN'
-	axios.defaults.withCredentials = true;
-
-	//  THÊM INTERCEPTOR ĐỌC XSRF-TOKEN (đây là chìa khóa!)
-	axiosInstance.interceptors.request.use((config) => {
-		// Chỉ xử lý cookie ở client-side
-		if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-			// Lấy token từ cookie thủ công
-			const cookies = document.cookie.split('; ')
-			const xsrfCookie = cookies.find(row => row.startsWith('XSRF-TOKEN='))
-
-			if (xsrfCookie) {
-				const token = xsrfCookie.split('=')[1]
-				if (token) {
-					config.headers['X-XSRF-TOKEN'] = decodeURIComponent(token)
-					console.log('✅ XSRF-TOKEN được gắn vào request:', token.substring(0, 20) + '...')
-				}
-			} else {
-				console.warn('⚠️ Không tìm thấy XSRF-TOKEN trong cookies')
-				console.log('Available cookies:', document.cookie)
-			}
+		if (token) {
+			headers['Authorization'] = `Bearer ${token}`;
 		}
-		return config
-	})
 
+		const options = {
+			baseURL: BASE_URL,
+			method,
+			headers,
+		};
 
-	// Response interceptor
-	axiosInstance.interceptors.response.use(
-		(response) => {
-			return response;
-		},
-		(error) => {
-			return Promise.reject(handleError(error));
+		if (data) {
+			options.body = data;
 		}
-	);
+
+		return options;
+	};
 
 	// Handle response
 	const handleResponse = (response) => {
-		return response.data;
+		return response;
 	};
 
 	// Handle error
 	const handleError = (error) => {
+		if (error.response?.status === 401) {
+			clearAuth();
+		}
+		
 		if (error?.data) {
 			return error.data;
-		} else if (error?.errors) {
-			return error.errors;
+		} else if (error?.response?._data) {
+			return error.response._data;
 		}
 
 		return error;
@@ -76,7 +63,9 @@ export const useApi = () => {
 		 */
 		async apiGet(url, params = {}) {
 			try {
-				const response = await axiosInstance.get(`/api/${url}`, { params });
+				const options = createFetchOptions('GET');
+				options.params = params;
+				const response = await $fetch(`/api/${url}`, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -88,7 +77,8 @@ export const useApi = () => {
 		 */
 		async apiPost(url, data = {}) {
 			try {
-				const response = await axiosInstance.post(`/api/${url}`, data);
+				const options = createFetchOptions('POST', data);
+				const response = await $fetch(`/api/${url}`, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -100,7 +90,8 @@ export const useApi = () => {
 		 */
 		async apiPut(url, data = {}) {
 			try {
-				const response = await axiosInstance.put(`/api/${url}`, data);
+				const options = createFetchOptions('PUT', data);
+				const response = await $fetch(`/api/${url}`, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -112,7 +103,8 @@ export const useApi = () => {
 		 */
 		async apiDelete(url) {
 			try {
-				const response = await axiosInstance.delete(`/api/${url}`);
+				const options = createFetchOptions('DELETE');
+				const response = await $fetch(`/api/${url}`, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -124,11 +116,9 @@ export const useApi = () => {
 		 */
 		async apiPostFormData(url, formData) {
 			try {
-				const response = await axiosInstance.post(`/api/${url}`, formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-				});
+				// Don't set Content-Type for FormData, let browser handle it
+				const options = createFetchOptions('POST', formData);
+				const response = await $fetch(`/api/${url}`, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -140,11 +130,8 @@ export const useApi = () => {
 		 */
 		async apiPutFormData(url, formData) {
 			try {
-				const response = await axiosInstance.put(`/api/${url}`, formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-				});
+				const options = createFetchOptions('PUT', formData);
+				const response = await $fetch(`/api/${url}`, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -156,7 +143,10 @@ export const useApi = () => {
 		 */
 		async get(url, params = {}) {
 			try {
-				const response = await axiosInstance.get(url, { params });
+				const options = createFetchOptions('GET');
+				options.baseURL = ''; // Reset baseURL for direct URL
+				options.params = params;
+				const response = await $fetch(url, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -168,7 +158,9 @@ export const useApi = () => {
 		 */
 		async post(url, data = {}) {
 			try {
-				const response = await axiosInstance.post(url, data);
+				const options = createFetchOptions('POST', data);
+				options.baseURL = ''; // Reset baseURL for direct URL
+				const response = await $fetch(url, options);
 				return handleResponse(response);
 			} catch (error) {
 				throw handleError(error);
@@ -176,6 +168,28 @@ export const useApi = () => {
 		},
 	};
 
-	return { api };
+	/**
+	 * Set or remove authentication token
+	 * This manually updates the token in cookie
+	 */
+	const setAuthToken = (token) => {
+		authCookie.setToken(token || null);
+	};
+
+	/**
+	 * Clear authentication
+	 */
+	const clearAuth = () => {
+		authCookie.removeToken();
+	};
+
+	/**
+	 * Get current token
+	 */
+	const getToken = () => {
+		return getAuthToken();
+	};
+
+	return { api, setAuthToken, clearAuth, getToken };
 };
 

@@ -215,7 +215,7 @@ watchImageSrc();
 </script>
 
 <template>
-    <base-modal :is-open="isOpen" :title="title" @close="handleClose">
+    <base-modal :is-open="isOpen" :title="title" description="Chỉnh sửa ảnh nếu bạn muốn thay đổi ảnh" @close="handleClose">
         <div class="crop-modal-wrapper">
 
             <!-- Crop Section -->

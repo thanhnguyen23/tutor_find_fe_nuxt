@@ -20,261 +20,290 @@
             <p class="sub-title">Khám phá đội ngũ gia sư chất lượng cao của chúng tôi và tìm người phù hợp nhất với nhu cầu học tập của bạn</p>
         </div>
 
-        <div class="all-filter filter-desktop">
-            <!-- Basic Filters (Always visible) -->
-            <div class="filter-row filter-row-flex align-end">
-                <div class="filter-group">
-                    <label class="filter-label filter-label-bold">
-                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        <span>Vị trí & Học vấn & Môn học</span>
-                    </label>
-                    <div class="filter-row-flex filter-row_wrapper">
-                        <div class="filter-group">
-                            <base-select v-model="filters.provinces_id" :options="cityOptions" label="Thành phố" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </template>
-                            </base-select>
+        <!-- Modern Filter Section (New) -->
+        <div class="modern-filter-section">
+            <div class="modern-filter-container">
+                <!-- Main Search Bar -->
+                <!-- Desktop Search Bar -->
+                <div class="airbnb-search-bar desktop-search-bar" ref="searchBarRef">
+                    <div class="search-highlight" :style="highlightStyle"></div>
+                    <!-- Location Section -->
+                    <div class="search-filter-item" :ref="el => setItemRef(el, 'location')" :class="{ 'active': activeDropdown === 'location' }" @click.stop="toggleDropdown('location')">
+                        <div class="section-content">
+                            <div class="section-label">Địa điểm</div>
+                            <div class="section-value" :class="{ 'placeholder': !filters.provinces_id }">
+                                {{ getCityName(filters.provinces_id) || 'Tìm kiếm điểm đến' }}
+                            </div>
                         </div>
-                        <div class="filter-group">
-                            <base-select v-model="filters.subject" :options="subjectOptions" label="Môn học" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </template>
-                            </base-select>
+                        <!-- Dropdown -->
+                        <div v-if="activeDropdown === 'location'" class="search-dropdown location-dropdown" @click.stop>
+                            <div class="dropdown-title">Điểm đến được đề xuất</div>
+                            <div class="dropdown-list">
+                                <div class="dropdown-item" @click="selectCity('')">
+                                    <div class="item-icon map-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Tất cả địa điểm</div>
+                                        <div class="item-desc">Tìm kiếm mọi nơi</div>
+                                    </div>
+                                </div>
+                                <div v-for="city in cityOptions" :key="city.id" class="dropdown-item" @click="selectCity(city.id)">
+                                    <div class="item-icon location-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">{{ city.name }}</div>
+                                        <div class="item-desc">Việt Nam</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="filter-group">
-                            <base-select v-model="filters.educationLevel" :options="educationLevelOptions" label="Cấp độ" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                                    </svg>
-                                </template>
-                            </base-select>
+                    </div>
+
+                    
+
+                    <!-- Subject Section -->
+                    <div class="search-filter-item" :ref="el => setItemRef(el, 'subject')" :class="{ 'active': activeDropdown === 'subject' }" @click.stop="toggleDropdown('subject')">
+                        <div class="section-content">
+                            <div class="section-label">Môn học</div>
+                            <div class="section-value" :class="{ 'placeholder': !filters.subject }">
+                                {{ getSubjectName(filters.subject) || 'Thêm môn học' }}
+                            </div>
                         </div>
-                        <div class="filter-group">
-                            <base-select v-model="filters.experience" :options="experienceOptions" label="Kinh nghiệm" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </template>
-                            </base-select>
+                        <!-- Dropdown -->
+                        <div v-if="activeDropdown === 'subject'" class="search-dropdown subject-dropdown" @click.stop>
+                            <div class="dropdown-title">Môn học phổ biến</div>
+                            <div class="dropdown-list">
+                                <div class="dropdown-item" @click="selectSubject('')">
+                                    <div class="item-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Tất cả môn học</div>
+                                        <div class="item-desc">Khám phá tất cả</div>
+                                    </div>
+                                </div>
+                                <div v-for="sub in subjectOptions" :key="sub.id" class="dropdown-item" @click="selectSubject(sub.id)">
+                                    <div class="item-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">{{ sub.name }}</div>
+                                        <div class="item-desc">Môn học</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn-filter-toggle" @click="showAdvancedFilters = !showAdvancedFilters">
-                            <svg v-if="!showAdvancedFilters" class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="16"></line>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                            <svg v-else class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                            <span>{{ showAdvancedFilters ? 'Thu gọn' : 'Mở rộng' }}</span>
+                    </div>
+
+                    
+
+                    <!-- Level Section -->
+                    <div class="search-filter-item" :ref="el => setItemRef(el, 'level')" :class="{ 'active': activeDropdown === 'level' }" @click.stop="toggleDropdown('level')">
+                        <div class="section-content">
+                            <div class="section-label">Trình độ</div>
+                            <div class="section-value" :class="{ 'placeholder': !filters.educationLevel }">
+                                {{ getLevelName(filters.educationLevel) || 'Thêm trình độ' }}
+                            </div>
+                        </div>
+                        <!-- Dropdown -->
+                        <div v-if="activeDropdown === 'level'" class="search-dropdown level-dropdown" @click.stop>
+                            <div class="dropdown-title">Chọn trình độ</div>
+                            <div class="dropdown-list">
+                                <div class="dropdown-item" @click="selectLevel('')">
+                                    <div class="item-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Tất cả trình độ</div>
+                                        <div class="item-desc">Mọi cấp độ</div>
+                                    </div>
+                                </div>
+                                <div v-for="lvl in educationLevelOptions" :key="lvl.id" class="dropdown-item" @click="selectLevel(lvl.id)">
+                                    <div class="item-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">{{ lvl.name }}</div>
+                                        <div class="item-desc">Cấp độ học vấn</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Experience Section (New 4th Section) -->
+                    <div class="search-filter-item" :ref="el => setItemRef(el, 'experience')" :class="{ 'active': activeDropdown === 'experience' }" @click.stop="toggleDropdown('experience')">
+                        <div class="section-content">
+                            <div class="section-label">Kinh nghiệm</div>
+                            <div class="section-value" :class="{ 'placeholder': !filters.experience }">
+                                {{ getExperienceName(filters.experience) || 'Thêm kinh nghiệm' }}
+                            </div>
+                        </div>
+                        <!-- Dropdown -->
+                        <div v-if="activeDropdown === 'experience'" class="search-dropdown experience-dropdown" @click.stop>
+                            <div class="dropdown-title">Chọn kinh nghiệm</div>
+                            <div class="dropdown-list">
+                                <div class="dropdown-item" @click="selectExperience('')">
+                                    <div class="item-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">Tất cả kinh nghiệm</div>
+                                        <div class="item-desc">Mọi mức kinh nghiệm</div>
+                                    </div>
+                                </div>
+                                <div v-for="exp in experienceOptions" :key="exp.id" class="dropdown-item" @click="selectExperience(exp.id)">
+                                    <div class="item-icon">
+                                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-title">{{ exp.name }}</div>
+                                        <div class="item-desc">Kinh nghiệm giảng dạy</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+
+                    <!-- Search Button -->
+                    <div class="search-btn-wrapper">
+                        <button class="search-btn-circle" @click="refreshSearch">
+                            <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
+
+                        <button class="filter-btn-circle" @click="showFilter = true">
+                            <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Advanced Filters (Collapsible) -->
-            <transition name="expand">
-                <div v-if="showAdvancedFilters" class="advanced-filters">
-                    <div class="separation"></div>
-
-                    <div class="filter-row filter-row-flex align-end">
-                        <div class="filter-group filter-group-flex2">
-                            <label class="filter-label filter-label-bold">
-                                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                <span>Đánh giá & Mức giá</span>
-                            </label>
-                            <div class="filter-row-flex filter-row_wrapper">
-                                <div class="slider-block">
-                                    <div class="slider-info">Đánh giá tối thiểu: {{ filters.rating }} sao</div>
-                                    <div class="custom-slider-wrapper">
-                                        <input type="range" min="0" max="5" step="0.5" v-model.number="filters.rating" class="custom-slider" />
-                                        <div class="slider-labels">
-                                            <span>0 sao</span>
-                                            <span>2.5 sao</span>
-                                            <span>5 sao</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="slider-block">
-                                    <div class="slider-info">Mức giá tối đa: {{ formatCurrency(filters.price) }} / giờ</div>
-                                    <div class="custom-slider-wrapper">
-                                        <input type="range" min="100000" max="500000" step="10000" v-model.number="filters.price" class="custom-slider" />
-                                        <div class="slider-labels">
-                                            <span>100k</span>
-                                            <span>300k</span>
-                                            <span>500k</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Mobile Search Bar -->
+                <div class="airbnb-search-bar mobile-search-bar" @click="showFilter = true">
+                    <div class="search-icon-wrapper">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <div class="mobile-search-content">
+                        <div class="mobile-search-title">Tìm kiếm gia sư</div>
+                        <div class="mobile-search-subtitle">
+                            {{ getSubjectName(filters.subject) || 'Bất kỳ đâu' }} • {{ getCityName(filters.provinces_id) || 'Bất kỳ môn nào' }}
                         </div>
                     </div>
-                </div>
-            </transition>
-        </div>
-
-        <div class="all-filter filter-mobile">
-            <div class="filter-row filter-row-flex align-end">
-                <div class="filter-group filter-group-flex2">
-                    <!-- <label class="filter-label filter-label-bold">
-                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        <span>Học vấn & Môn học</span>
-                    </label> -->
-                    <div class="filter-row-flex filter-row_wrapper">
-                        <div class="filter-group d-flex align-end gap-g-1">
-                            <base-select v-model="filters.subject" :options="subjectOptions" placeholder="Tất cả môn học" size="large" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </template>
-                            </base-select>
-                            <button class="btn-lg btn-secondary" @click="showFilter = true">
-                                <svg class="icon-lg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 7H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M7 12L17 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M11 17H13" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                            </button>
-                        </div>
+                    <div class="filter-icon-wrapper">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Search Results -->
-        <div class="search-results" v-if="tutors.length > 0">
-
-            <div class="tutors-grid">
-                <TutorCard
-                    v-for="tutor in tutors"
-                    :key="tutor.uid"
-                    :tutor="tutor"
-                    @toggle-save="handleToggleSave"
-                    @navigate-to-tutor="handleNavigateToTutor"
-                    @redirect-to-booking="handleRedirectToBooking"
-                />
-            </div>
-        </div>
-
-        <base-pagination :meta="dataPaginate" :current-page="currentPage" @changePage="changePage"></base-pagination>
     </div>
 </div>
 
-<base-modal title="Bộ lọc" :is-open="showFilter" @close="showFilter = false">
-    <div class="modal-content">
-        <div class="all-filter filter-modal">
-            <div class="filter-row filter-row-flex align-end">
-                <div class="filter-group">
-                    <label class="filter-label filter-label-bold">
-                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        <span>Vị trí & Học vấn & Môn họ</span>
-                    </label>
-                    <div class="filter-row-flex filter-row_wrapper">
-                        <div class="filter-group">
-                            <base-select v-model="filters.provinces_id" :options="cityOptions" label="Thành phố" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </template>
-                            </base-select>
-                        </div>
-                        <div class="filter-group">
-                            <base-select v-model="filters.subject" :options="subjectOptions" label="Môn học" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </template>
-                            </base-select>
-                        </div>
-                        <div class="filter-group">
-                            <base-select v-model="filters.educationLevel" :options="educationLevelOptions" label="Cấp độ" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                                    </svg>
-                                </template>
-                            </base-select>
-                        </div>
-                        <div class="filter-group">
-                            <base-select v-model="filters.experience" :options="experienceOptions" label="Kinh nghiệm" placeholder="Tất cả" widthFull="true">
-                                <template #icon>
-                                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </template>
-                            </base-select>
-                        </div>
+<div class="results-page" v-if="!isLoading">
+	<div class="container">
+		<!-- Search Results -->
+		<div class="search-results" v-if="tutors.length > 0">
+            <!-- Featured Tutors Section -->
+            <div class="featured-section" v-if="featuredTutors.length > 0">
+                <div class="section-header">
+                    <div class="icon-wrapper">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
                     </div>
+                    <div class="section-title-wrapper">
+                        <h2 class="section-title">Gia sư nổi bật</h2>
+						<p class="section-subtitle">Những gia sư được đánh giá cao nhất phù hợp với tìm kiếm của bạn</p>
+                    </div>
+                </div>
+                <div class="tutors-grid">
+                    <TutorCard
+                        v-for="tutor in featuredTutors"
+                        :key="tutor.uid"
+                        :tutor="tutor"
+                        @toggle-save="handleToggleSave"
+                        @navigate-to-tutor="handleNavigateToTutor"
+                        @redirect-to-booking="handleRedirectToBooking"
+                    />
                 </div>
             </div>
 
-            <div class="separation"></div>
-
-            <div class="filter-row filter-row-flex align-end">
-                <div class="filter-group filter-group-flex2">
-                    <label class="filter-label filter-label-bold">
-                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        <span>Đánh giá & Mức giá</span>
-                    </label>
-                    <div class="filter-row-flex filter-row_wrapper">
-                        <div class="slider-block">
-                            <div class="slider-info">Đánh giá tối thiểu: {{ filters.rating }} sao</div>
-                            <div class="custom-slider-wrapper">
-                                <input type="range" min="0" max="5" step="0.5" v-model.number="filters.rating" class="custom-slider" />
-                                <div class="slider-labels">
-                                    <span>0 sao</span>
-                                    <span>2.5 sao</span>
-                                    <span>5 sao</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="slider-block">
-                            <div class="slider-info">Mức giá tối đa: {{ formatCurrency(filters.price) }} / giờ</div>
-                            <div class="custom-slider-wrapper">
-                                <input type="range" min="100000" max="500000" step="10000" v-model.number="filters.price" class="custom-slider" />
-                                <div class="slider-labels">
-                                    <span>100k</span>
-                                    <span>300k</span>
-                                    <span>500k</span>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Regular Tutors Section -->
+            <div class="regular-section" v-if="regularTutors.length > 0">
+                <div class="section-header">
+                    <div class="icon-wrapper">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <div class="section-title-wrapper">
+                        <h2 class="section-title">Danh sách gia sư</h2>
+						<p class="section-subtitle">Danh sách gia sư phù hợp với tìm kiếm của bạn</p>
                     </div>
                 </div>
+                <div class="tutors-grid">
+                    <TutorCard
+                        v-for="tutor in regularTutors"
+                        :key="tutor.uid"
+                        :tutor="tutor"
+                        @toggle-save="handleToggleSave"
+                        @navigate-to-tutor="handleNavigateToTutor"
+                        @redirect-to-booking="handleRedirectToBooking"
+                    />
+                </div>
+            </div>
+		</div>
+
+        <!-- No Data State -->
+        <div class="no-results" v-else>
+            <div class="no-results-content">
+                <div class="no-results-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </div>
+                <h3 class="no-results-title">Không tìm thấy kết quả nào</h3>
+                <p class="no-results-desc">
+                    Chúng tôi không tìm thấy gia sư nào phù hợp với bộ lọc hiện tại của bạn.
+                    <br>Hãy thử thay đổi từ khóa hoặc điều chỉnh bộ lọc.
+                </p>
+                <button class="btn-lg btn-secondary" @click="filters = { provinces_id: '', subject: '', educationLevel: '', experience: '', rating: 0, price: 500000 }">
+                    Xóa bộ lọc
+                </button>
             </div>
         </div>
 
-        <div class="modal-footer">
-            <button class="btn-lg btn-primary w-100" @click="showFilter = false">
-                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-                Hiển thị kết quả
-            </button>
-        </div>
-    </div>
-</base-modal>
+		<base-pagination :meta="dataPaginate" :current-page="currentPage" @changePage="changePage"></base-pagination>
+	</div>
+</div>
+
+<AdvancedFilterModal
+    :is-open="showFilter"
+    v-model:filters="filters"
+    :city-options="cityOptions"
+    :subject-options="subjectOptions"
+    :education-level-options="educationLevelOptions"
+    :experience-options="experienceOptions"
+    @close="showFilter = false"
+    @reset="filters = { provinces_id: '', subject: '', educationLevel: '', experience: '', rating: 0, price: 500000 }"
+    @apply="showFilter = false; refreshSearch()"
+/>
 
 </template>
 
 <script setup>
-definePageMeta({
-	middleware: 'auth',
-});
+import { onMounted } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
 const configStore = useConfigStore();
+const layoutStore = useLayoutStore();
 const { api } = useApi();
 const { formatCurrency } = useHelper();
 
@@ -290,7 +319,6 @@ const filters = ref({
 
 // Search state
 const showFilter = ref(false);
-const showAdvancedFilters = ref(false);
 const currentPage = ref(parseInt(route.query.page) || 1);
 const hasSearched = ref(false);
 
@@ -310,7 +338,7 @@ const { data: searchData, pending: isLoading, refresh: refreshSearch } = await u
         try {
             const response = await api.apiGet('tutors', params);
             return {
-                tutors: response?.data || [],
+                tutors: response.data || [],
                 paginate: response?.meta || {}
             };
         } catch (error) {
@@ -331,36 +359,26 @@ const { data: searchData, pending: isLoading, refresh: refreshSearch } = await u
 const tutors = computed(() => searchData.value?.tutors || []);
 const dataPaginate = computed(() => searchData.value?.paginate || {});
 
+// Split tutors into featured and regular (only on first page)
+const featuredTutors = computed(() => {
+    if (currentPage.value === 1 && tutors.value.length > 0) {
+        return tutors.value.slice(0, 2);
+    }
+    return [];
+});
+
+const regularTutors = computed(() => {
+    if (currentPage.value === 1 && tutors.value.length > 0) {
+        return tutors.value.slice(0, 2);
+    }
+    return tutors.value;
+});
+
 // Options for filters
-const subjectOptions = computed(() => {
-    const subjects = configStore.configuration?.subjects || [];
-    return subjects.map(subject => ({
-        id: subject.id,
-        name: subject.name
-    }));
-});
-
-const educationLevelOptions = computed(() => {
-    const levels = configStore.configuration?.education_levels || [];
-    return levels.map(level => ({
-        id: level.id,
-        name: level.name
-    }));
-});
-
-const experienceOptions = computed(() => {
-    const experiences = configStore.configuration?.experience_action || [];
-
-    return Object.entries(experiences).map(([key, value]) => ({
-        id: key,
-        name: value
-    }));
-});
-
-const cityOptions = computed(() => {
-    const provinces = configStore.configuration?.provinces || [];
-    return provinces.map(p => ({ id: p.id, name: p.name }));
-});
+const subjectOptions = computed(() => configStore.configuration?.subjects || []);
+const educationLevelOptions = computed(() => configStore.configuration?.education_levels || []);
+const experienceOptions = computed(() => configStore.configuration?.experience_action || []);
+const cityOptions = computed(() => configStore.configuration?.provinces || []);
 
 // Get selected subject for meta tags
 const selectedSubject = computed(() => {
@@ -483,654 +501,109 @@ if (route.query.level) filters.value.educationLevel = route.query.level;
 if (route.query.experience) filters.value.experience = route.query.experience;
 if (route.query.page) currentPage.value = parseInt(route.query.page) || 1;
 
+
+
+// Dropdown Logic
+const activeDropdown = ref(null);
+
+const toggleDropdown = (name) => {
+    if (activeDropdown.value === name) {
+        activeDropdown.value = null;
+    } else {
+        activeDropdown.value = name;
+    }
+};
+
+const selectCity = (id) => {
+    filters.value.provinces_id = id;
+    activeDropdown.value = null;
+};
+
+const selectSubject = (id) => {
+    filters.value.subject = id;
+    activeDropdown.value = null;
+};
+
+const selectLevel = (id) => {
+    filters.value.educationLevel = id;
+    activeDropdown.value = null;
+};
+
+const getCityName = (id) => {
+    if (!id) return '';
+    return cityOptions.value.find(c => c.id == id)?.name || '';
+};
+
+const getSubjectName = (id) => {
+    if (!id) return '';
+    return subjectOptions.value.find(s => s.id == id)?.name || '';
+};
+
+const getLevelName = (id) => {
+    if (!id) return '';
+    return educationLevelOptions.value.find(l => l.id == id)?.name || '';
+};
+
+const getExperienceName = (id) => {
+    if (!id) return '';
+    return experienceOptions.value.find(e => e.id == id)?.name || '';
+};
+
+const selectExperience = (id) => {
+    filters.value.experience = id;
+    activeDropdown.value = null;
+};
 // Mark initialization as complete after a tick
 nextTick(() => {
     isInitializing = false;
+    // Close dropdowns when clicking outside
+    window.addEventListener('click', () => {
+        activeDropdown.value = null;
+    });
 });
+
+// Sliding Highlight Logic
+const highlightStyle = ref({ opacity: 0 });
+const itemRefs = ref({});
+const searchBarRef = ref(null);
+
+const setItemRef = (el, key) => {
+    if (el) itemRefs.value[key] = el;
+};
+
+const updateHighlight = () => {
+    if (!activeDropdown.value || !itemRefs.value[activeDropdown.value] || !searchBarRef.value) {
+        highlightStyle.value = { opacity: 0 };
+        return;
+    }
+    
+    const el = itemRefs.value[activeDropdown.value];
+    const barRect = searchBarRef.value.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    
+    highlightStyle.value = {
+        opacity: 1,
+        left: `${elRect.left - barRect.left}px`,
+        width: `${elRect.width}px`
+    };
+};
+
+watch(activeDropdown, () => {
+    nextTick(() => updateHighlight());
+});
+
+onMounted(() => {
+	layoutStore.setHiddenFooter(true);
+})
+
+onUnmounted(() => {
+	layoutStore.setHiddenFooter(false);
+})
 </script>
 
 <style scoped>
 @import url('~/assets/css/tutorCard.css');
-
-.search-page {
-    padding: 2rem 0;
-    background: var(--gray-50);
-    position: relative;
-    min-height: 100vh;
-}
-
-.search-page::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 25% 25%, rgba(7, 27, 102, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(7, 27, 102, 0.02) 0%, transparent 50%);
-    pointer-events: none;
-}
-
-.search-page .container {
-    display: grid;
-    gap: 1rem;
-    position: relative;
-}
-
-.header-wrapper {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    position: relative;
-}
-
-.header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, rgba(7, 27, 102, 0.1) 0%, rgba(7, 27, 102, 0.05) 100%);
-    border: 1px solid rgba(7, 27, 102, 0.1);
-    border-radius: 50px;
-    font-size: var(--font-size-small);
-    font-weight: 600;
-    color: var(--color-primary);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(7, 27, 102, 0.1);
-    margin-bottom: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.header-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(7, 27, 102, 0.15);
-}
-
-.search-page .title {
-    font-size: var(--font-size-heading-2);
-    font-weight: 800;
-    margin: 0 0 1rem 0;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.search-page .sub-title {
-    font-size: var(--font-size-base);
-    color: #64748b;
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-.all-filter {
-    display: grid;
-    border-radius: 2rem;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 2.7rem;
-    box-shadow:
-        0 25px 50px rgba(0, 0, 0, 0.08),
-        0 12px 24px rgba(0, 0, 0, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.all-filter:not(.filter-modal):hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 32px 64px rgba(0, 0, 0, 0.12),
-        0 16px 32px rgba(0, 0, 0, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-.all-filter:not(.filter-modal)::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    border-radius: 28px 28px 0 0;
-}
-
-.all-filter:not(.filter-modal)::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-    pointer-events: none;
-    animation: float 8s ease-in-out infinite;
-}
-
-/* Enhanced form group interactions */
-.all-filter .filter-group {
-    transition: all 0.3s ease;
-}
-
-.all-filter .filter-group:hover {
-    transform: translateY(-1px);
-}
-
-.all-filter .filter-group:focus-within {
-    transform: translateY(-2px);
-}
-
-/* Enhanced button styles */
-.all-filter button {
-    position: relative;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.all-filter button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-}
-
-.all-filter button:hover::before {
-    left: 100%;
-}
-
-.filter-mobile {
-    display: none;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 2rem;
-}
-
-.filter-mobile::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    border-radius: 20px 20px 0 0;
-}
-
-.filter-row-flex {
-    align-items: end;
-}
-
-.filter-row-group {
-    display: flex;
-    justify-content: space-between;
-}
-
-.filter-row-group > .filter-row {
-    display: flex;
-    gap: 1rem;
-}
-
-.filter-row {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    position: relative;
-}
-
-.filter-group {
-    display: grid;
-    width: 100%;
-    position: relative;
-}
-
-.filter-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.75rem;
-    font-size: 15px;
-    position: relative;
-}
-
-/* .filter-label::before {
-    content: '';
-    width: 4px;
-    height: 4px;
-    background: var(--color-primary);
-    border-radius: 50%;
-    flex-shrink: 0;
-} */
-
-.separation {
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, rgba(229, 231, 235, 0.5) 20%, rgba(229, 231, 235, 0.8) 50%, rgba(229, 231, 235, 0.5) 80%, transparent 100%);
-    margin: 1.5rem 0;
-    position: relative;
-}
-
-.separation::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    border-radius: 1px;
-}
-
-.filter-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-    border-top: 1px solid var(--gray-200);
-}
-
-/* Enhanced Search Results */
-.search-results {
-    position: relative;
-}
-
-.results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 1.3rem 1.8rem;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.results-title {
-    font-size: var(--font-size-medium);
-    font-weight: 600;
-    color: #1f2937;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
-}
-
-.results-title::before {
-    content: '🎯';
-    font-size: 1.2rem;
-}
-
-.sort-options {
-    min-width: 200px;
-}
-
-.custom-slider-wrapper {
-    width: 100%;
-    position: relative;
-}
-
-.custom-slider {
-    width: 100%;
-    appearance: none;
-    height: 8px;
-    background: linear-gradient(90deg, #e5e7eb 0%, #d1d5db 100%);
-    outline: none;
-    border-radius: 6px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 0.75rem;
-    position: relative;
-    cursor: pointer;
-}
-
-.custom-slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.custom-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.custom-slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.custom-slider::-moz-range-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.custom-slider::-ms-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.custom-slider:focus {
-    outline: none;
-    background: linear-gradient(90deg, #d1d5db 0%, #9ca3af 100%);
-}
-
-.custom-slider:focus::-webkit-slider-thumb {
-    transform: scale(1.15);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5), 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--font-size-mini);
-    color: #6b7280;
-    margin-top: 0.25rem;
-    font-weight: 500;
-}
-
-.filter-label-bold {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-.filter-group-flex2 {
-    flex: 2;
-}
-.slider-block {
-    flex: 1;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    /* box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); */
-    border-color: rgba(99, 102, 241, 0.2);
-}
-
-.slider-block:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    border-color: rgba(99, 102, 241, 0.2);
-}
-
-.slider-block::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    border-radius: 16px 16px 0 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.slider-block:hover::before {
-    opacity: 1;
-}
-
-.slider-info {
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.slider-info::before {
-    content: '🎯';
-    font-size: 1.1rem;
-}
-
-.tutor-actions {
-    display: flex;
-    gap: 0.75rem;
-}
-
-@media (max-width: 1024px) {
-	.filter-row {
-        grid-template-columns: 1fr;
-    }
-
-    .filter-row_wrapper {
-        display: grid;
-        grid-template-columns: 2fr;
-    }
-
-    .all-filter {
-        padding: 2.5rem;
-        border-radius: 24px;
-    }
-
-	.filter-modal {
-		padding: 0;
-		box-shadow: none;
-		border: none;
-		border-radius: 0;
-	}
-
-	.header-wrapper {
-		margin-bottom: 1rem;
-	}
-
-    .filter-desktop {
-        display: none;
-    }
-
-    .filter-mobile {
-        display: block;
-    }
-
-    .slider-block {
-        padding: 1.25rem;
-    }
-}
-
-@media (max-width: 640px) {
-    .tutors-section {
-        padding: 1rem;
-    }
-
-    .tutor-actions {
-        flex-direction: column;
-    }	
-
-    .filter-row {
-        grid-template-columns: 1fr;
-    }
-
-    .filter-row_wrapper {
-        display: grid;
-        grid-template-columns: 2fr;
-    }
-
-    .filter-desktop {
-        display: none;
-    }
-
-    .filter-mobile {
-        display: block;
-        padding: 1.25rem;
-        border-radius: 16px;
-    }
-
-    .slider-block {
-        padding: 1rem;
-    }
-
-    .slider-info {
-        font-size: 14px;
-    }
-}
-
-/* Enhanced animations and effects */
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-/* Filter Toggle Button */
-.filter-toggle-wrapper {
-    display: flex;
-    justify-content: center;
-    margin: 1.5rem 0;
-}
-
-.btn-filter-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.725rem 1.8rem;
-    height: 3.5rem;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-    border: 1.5px solid rgba(99, 102, 241, 0.2);
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--color-primary);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    white-space: nowrap;
-}
-
-.btn-filter-toggle::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-    transition: left 0.5s;
-}
-
-.btn-filter-toggle:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
-    border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
-}
-
-.btn-filter-toggle:hover::before {
-    left: 100%;
-}
-
-.btn-filter-toggle:active {
-    transform: translateY(0);
-}
-
-.btn-filter-toggle svg {
-    transition: transform 0.3s ease;
-}
-
-.btn-filter-toggle:hover svg {
-    transform: rotate(90deg);
-}
-
-/* Advanced Filters Section */
-.advanced-filters {
-    animation: slideDown 0.4s ease-out;
-}
-
-/* Expand Transition */
-.expand-enter-active,
-.expand-leave-active {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-20px);
-}
-
-.expand-enter-to,
-.expand-leave-from {
-    max-height: 1000px;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Mobile responsive for toggle button */
-@media (max-width: 640px) {
-    .btn-filter-toggle {
-        padding: 0.75rem 1.5rem;
-        font-size: 14px;
-        gap: 0.5rem;
-    }
-
-    .filter-toggle-wrapper {
-        margin: 1rem 0;
-    }
-}
+@import url('~/assets/css/search-bar.css');
+@import url('~/assets/css/search-page.css');
 </style>
+

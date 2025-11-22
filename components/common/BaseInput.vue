@@ -110,21 +110,11 @@ const handleBlur = () => {
 
 <template>
 <div class="form-group">
-    <div v-if="hasLabel" class="label-group" :class="{
-            'label-small': size === 'small',
-            'label-base': size === 'base',
-            'label-medium': size === 'medium',
-            'label-large': size === 'large',
-            'label-xl': size === 'xl'
-        }">
-        <label>{{ label }}</label>
-        <span v-if="required" class="required">*</span>
-    </div>
-
     <div class="input-wrapper" :class="{
       'with-icon': $slots.icon,
       'with-unit': hasUnit,
-      'has-error': hasError
+      'has-error': hasError,
+      'has-floating-label': hasLabel
     }">
         <template v-if="$slots.icon">
             <div class="icon">
@@ -133,17 +123,42 @@ const handleBlur = () => {
         </template>
 
         <template v-if="type === 'textarea'">
-            <textarea :value="modelValue" :placeholder="placeholder" :rows="rows" :required="required" :min="min" :max="max" :disabled="disabled" @input="updateValue"></textarea>
+            <textarea 
+                :value="modelValue" 
+                :placeholder="hasLabel ? ' ' : placeholder" 
+                :rows="rows" 
+                :required="required" 
+                :min="min" 
+                :max="max" 
+                :disabled="disabled" 
+                @input="updateValue"
+                class="form-control"
+            ></textarea>
         </template>
         <template v-else>
-            <input :type="inputType" :value="modelValue" :placeholder="placeholder" :required="required" :min="min" :max="max" :step="step" :disabled="disabled" :class="{
-                'input-small': size === 'small',
-                'input-base': size === 'base',
-                'input-medium': size === 'medium',
-                'input-large': size === 'large',
-                'input-xl': size === 'xl'
-            }" @input="updateValue">
+            <input 
+                :type="inputType" 
+                :value="modelValue" 
+                :placeholder="hasLabel ? ' ' : placeholder" 
+                :required="required" 
+                :min="min" 
+                :max="max" 
+                :step="step" 
+                :disabled="disabled" 
+                :class="{
+                    'input-small': size === 'small',
+                    'input-base': size === 'base',
+                    'input-medium': size === 'medium',
+                    'input-large': size === 'large',
+                    'input-xl': size === 'xl'
+                }" 
+                @input="updateValue"
+            >
         </template>
+
+        <label v-if="hasLabel" class="floating-label">
+            {{ label }} <span v-if="required" class="required">*</span>
+        </label>
 
         <template v-if="isPasswordType">
             <button type="button" class="password-toggle" @click="togglePasswordVisibility">
@@ -171,35 +186,7 @@ const handleBlur = () => {
     position: relative;
 }
 
-.label-group {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 0.5rem;
-}
-
-.label-small {
-    font-size: var(--font-size-small);
-}
-.label-base {
-    font-size: var(--font-size-base);
-}
-.label-medium {
-    font-size: var(--font-size-base);
-}
-.label-large {
-    font-size: var(--font-size-medium);
-}
-
-.label-group label {
-    display: block;
-    font-weight: 500;
-    color: #1f2937;
-    display: flex;
-    align-items: center;
-    font-size: var(--font-size-base);
-    letter-spacing: -0.01em;
-}
+/* Removed .label-group styles as it's no longer used */
 
 .required {
     color: #ef4444;
@@ -261,7 +248,6 @@ input, textarea {
     padding: 0.75rem 1rem;
     border: 2px solid #e5e7eb;
     border-radius: 14px;
-    /* transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
     font-weight: 500;
     font-family: "Gill Sans", sans-serif;
     background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
@@ -270,6 +256,50 @@ input, textarea {
     line-height: 1.5;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     position: relative;
+}
+
+/* Floating Label Styles */
+.has-floating-label input,
+.has-floating-label textarea {
+    padding-top: 1.625rem; /* Space for label */
+    padding-bottom: 0.625rem;
+}
+
+/* Force height for inputs with floating labels to ensure they look good */
+.has-floating-label input {
+    height: 3.5rem;
+}
+
+.floating-label {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    transform-origin: left top;
+    z-index: 1;
+}
+
+.has-floating-label textarea + .floating-label {
+    top: 1.5rem; /* Adjust for textarea */
+}
+
+/* When input is focused or has value (placeholder not shown) */
+.has-floating-label input:focus ~ .floating-label,
+.has-floating-label input:not(:placeholder-shown) ~ .floating-label,
+.has-floating-label textarea:focus ~ .floating-label,
+.has-floating-label textarea:not(:placeholder-shown) ~ .floating-label {
+    top: 0.5rem;
+    transform: translateY(0) scale(0.85);
+}
+
+/* Adjust icon position when floating label is active */
+.has-floating-label.with-icon .floating-label {
+    left: 2.7rem;
 }
 
 textarea {
@@ -299,31 +329,31 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 .input-small {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem;
     height: 2.75rem;
     font-size: var(--font-size-small);
 }
 
 .input-base {
-    padding: 0.65rem 0.75rem;
+    padding: 0.65rem;
     height: 2.75rem;
     font-size: var(--font-size-small);
 }
 
 .input-medium {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem;
     height: 3.1rem;
     font-size: var(--font-size-base);
 }
 
 .input-large {
-    padding: 1rem 1.4rem;
+    padding: 1rem;
     height: 3.5rem;
     font-size: var(--font-size-base);
 }
 
 .input-xl {
-    padding: 1.25rem 1.6rem;
+    padding: 1.25rem;
     height: 4rem;
     font-size: var(--font-size-base);
 }

@@ -9,14 +9,20 @@ export const useNotificationStore = defineStore('notification', {
 		},
 		notificationQueue: [], // Array to hold multiple notifications
 		hiddenNotificationPreview: false,
-		hiddenFooter: false,
+		unreadData: {
+			messages: 0,
+			pending_booking: 0,
+			notifications: 0,
+			schedule: 0,
+			recheduled_bookings: 0,
+		},
 	}),
 
 	getters: {
 		getShowNotification: (state) => state.showNotification,
 		getNotificationQueue: (state) => state.notificationQueue,
 		isNotificationPreviewHidden: (state) => state.hiddenNotificationPreview,
-		isFooterHidden: (state) => state.hiddenFooter,
+		getUnreadData: (state) => state.unreadData,
 	},
 
 	actions: {
@@ -36,8 +42,14 @@ export const useNotificationStore = defineStore('notification', {
 			this.hiddenNotificationPreview = payload;
 		},
 
-		setHiddenFooter(payload) {
-			this.hiddenFooter = payload;
+		setUnreadData(payload) {
+			this.unreadData = payload || {
+				messages: 0,
+				pending_booking: 0,
+				notifications: 0,
+				schedule: 0,
+				recheduled_bookings: 0,
+			};
 		},
 	},
 });

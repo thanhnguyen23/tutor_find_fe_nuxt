@@ -45,6 +45,9 @@ const mediaState = reactive({
 // ===== Video Elements =====
 const localVideo = ref(null)
 const remoteVideo = ref(null)
+const localVideoContainer = ref(null)
+const remoteVideoContainer = ref(null)
+const videoSectionRef = ref(null)
 
 // ===== WebRTC State (Gộp các biến liên quan đến peer) =====
 const webrtcState = reactive({
@@ -71,6 +74,8 @@ const uiState = reactive({
     pinnedTarget: 'local',
     isMobile: false,
     joinSoundEnabled: true,
+    isFullscreen: false,
+    areControlsVisible: true,
 })
 
 // ===== Audio Context =====
@@ -504,6 +509,39 @@ function checkAndAdjustLayoutForMobile() {
     }
 }
 
+// ===== Fullscreen Methods =====
+async function toggleFullscreen() {
+    if (!process.client) return
+
+    if (!document.fullscreenElement) {
+        if (videoSectionRef.value?.requestFullscreen) {
+            await videoSectionRef.value.requestFullscreen()
+        }
+    } else {
+        if (document.exitFullscreen) {
+            await document.exitFullscreen()
+        }
+    }
+}
+
+function onFullscreenChange() {
+    uiState.isFullscreen = !!document.fullscreenElement
+}
+
+async function toggleElementFullscreen(element) {
+    if (!process.client || !element) return
+
+    if (document.fullscreenElement === element) {
+        if (document.exitFullscreen) {
+            await document.exitFullscreen()
+        }
+    } else {
+        if (element.requestFullscreen) {
+            await element.requestFullscreen()
+        }
+    }
+}
+
 // ===== Session Methods =====
 async function onLeaveClassroom() {
     if (process.client) {
@@ -546,12 +584,14 @@ onMounted(async () => {
 
     if (process.client) {
         window.addEventListener('resize', checkAndAdjustLayoutForMobile)
+        document.addEventListener('fullscreenchange', onFullscreenChange)
     }
 })
 
 onBeforeUnmount(() => {
     if (process.client) {
         window.removeEventListener('resize', checkAndAdjustLayoutForMobile)
+        document.removeEventListener('fullscreenchange', onFullscreenChange)
     }
 
     cleanup()
@@ -578,6 +618,8 @@ defineExpose({
     pinLocal,
     pinRemote,
     onLeaveClassroom,
+    toggleFullscreen,
+    toggleElementFullscreen,
 })
 </script>
 
@@ -589,7 +631,7 @@ defineExpose({
         <div v-if="!classroomState.canAccess" class="access-denied">
             <div class="access-denied-content">
                 <div class="access-denied-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-max-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-max-4" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <circle cx="12" cy="12" r="10"></circle>
                         <path d="m4.9 4.9 14.2 14.2"></path>
                     </svg>
@@ -597,7 +639,7 @@ defineExpose({
                 <h2 class="access-denied-title">Không thể truy cập lớp học</h2>
                 <p class="access-denied-message">{{ checkStatusClassroom }}</p>
                 <p class="access-denied-subtitle">Bạn sẽ được chuyển về trang quản lý lớp học trong giây lát...</p>
-                <NuxtLink to="/classroom-manager" class="btn-md btn-primary access-denied-btn">
+                <NuxtLink to="/classroom-manager" class="access-denied-btn">
                     <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9,22 9,12 15,12 15,22"></polyline>
@@ -631,7 +673,7 @@ defineExpose({
                     </div>
 
                     <div class="header-actions">
-                        <button class="action-btn settings-btn" title="Cài đặt">
+                        <button class="settings-btn" title="Cài đặt">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="3"></circle>
                                 <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
@@ -642,10 +684,10 @@ defineExpose({
             </div>
 
             <!-- Video Section -->
-            <div class="video-section">
+            <div class="video-section" ref="videoSectionRef" :class="{ 'is-fullscreen': uiState.isFullscreen }">
                 <div class="video-grid" :class="`layout-${uiState.layoutMode}`">
                     <!-- Local Video -->
-                    <div class="video-container local-video" :class="{ 
+                    <div class="video-container local-video" ref="localVideoContainer" :class="{ 
                         'is-primary': uiState.layoutMode === 'pinned' && uiState.pinnedTarget === 'local', 
                         'is-secondary': uiState.layoutMode === 'pinned' && uiState.pinnedTarget === 'remote' 
                     }">
@@ -669,7 +711,7 @@ defineExpose({
                                     @click="setLayout('split')" 
                                     title="Chế độ 50/50"
                                 >
-                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg class="icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="3" y="5" width="8" height="14" rx="2"></rect>
                                         <rect x="13" y="5" width="8" height="14" rx="2"></rect>
                                     </svg>
@@ -681,11 +723,23 @@ defineExpose({
                                     @click="pinLocal" 
                                     title="Ghim màn hình của tôi"
                                 >
-                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg class="icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="2" y="4" width="20" height="14" rx="2"></rect>
                                         <rect x="14" y="12" width="8" height="6" rx="2"></rect>
                                     </svg>
                                     <span>Ghim</span>
+                                </button>
+                                <button 
+                                    class="layout-btn" 
+                                    @click="toggleElementFullscreen(localVideoContainer)" 
+                                    title="Toàn màn hình"
+                                >
+                                    <svg class="icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                                        <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+                                        <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                                        <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                                    </svg>
                                 </button>
                             </div>
 
@@ -709,7 +763,7 @@ defineExpose({
                     </div>
 
                     <!-- Remote Video -->
-                    <div class="video-container remote-video" :class="{ 
+                    <div class="video-container remote-video" ref="remoteVideoContainer" :class="{ 
                         'is-primary': uiState.layoutMode === 'pinned' && uiState.pinnedTarget === 'remote', 
                         'is-secondary': uiState.layoutMode === 'pinned' && uiState.pinnedTarget === 'local' 
                     }">
@@ -721,6 +775,8 @@ defineExpose({
                                         <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path>
                                         <rect x="2" y="6" width="14" height="12" rx="2" />
                                     </svg>
+                                    <p class="overlay-text" v-if="!webrtcState.hasStarted">Đang chờ kết nối...</p>
+                                    <p class="overlay-text" v-else>Camera đối phương đã tắt</p>
                                 </div>
                             </div>
 
@@ -732,7 +788,7 @@ defineExpose({
                                     @click="pinRemote" 
                                     title="Ghim màn hình đối phương"
                                 >
-                                    <svg class="icon-sm" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg class="icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="2" y="4" width="20" height="14" rx="2"></rect>
                                         <rect x="14" y="12" width="8" height="6" rx="2"></rect>
                                     </svg>
@@ -754,119 +810,172 @@ defineExpose({
 
                 <!-- Floating control bar -->
                 <div class="floating-controls">
-                    <div class="floating-controls-wrapper">
-                        <!-- Camera -->
-                        <button
-                            class="control-btn"
-                            :class="{ active: mediaState.camEnabled }"
-                            @click="toggleCamera"
-                            :title="mediaState.camEnabled ? 'Tắt camera' : 'Bật camera'"
-                        >
-                            <svg
-                                class="icon-lg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                    <Transition name="slide-up">
+                        <div class="floating-controls-wrapper" v-if="uiState.areControlsVisible">
+                            <!-- Camera -->
+                            <button
+                                class="control-btn"
+                                :class="{ active: mediaState.camEnabled }"
+                                @click="toggleCamera"
+                                :title="mediaState.camEnabled ? 'Tắt camera' : 'Bật camera'"
                             >
-                                <template v-if="mediaState.camEnabled">
-                                    <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path>
-                                    <rect x="2" y="6" width="14" height="12" rx="2"></rect>
-                                </template>
-                                <template v-else>
-                                    <path d="M10.66 6H14a2 2 0 0 1 2 2v2.5l5.248-3.062A.5.5 0 0 1 22 7.87v8.196"></path>
-                                    <path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"></path>
-                                    <path d="m2 2 20 20"></path>
-                                </template>
-                            </svg>
-                        </button>
+                                <svg
+                                    class="icon-md"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <template v-if="mediaState.camEnabled">
+                                        <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path>
+                                        <rect x="2" y="6" width="14" height="12" rx="2"></rect>
+                                    </template>
+                                    <template v-else>
+                                        <path d="M10.66 6H14a2 2 0 0 1 2 2v2.5l5.248-3.062A.5.5 0 0 1 22 7.87v8.196"></path>
+                                        <path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"></path>
+                                        <path d="m2 2 20 20"></path>
+                                    </template>
+                                </svg>
+                            </button>
 
-                        <!-- Microphone -->
-                        <button
-                            class="control-btn"
-                            :class="{ active: mediaState.micEnabled }"
-                            @click="toggleMic"
-                            :title="mediaState.micEnabled ? 'Tắt mic' : 'Bật mic'"
-                        >
-                            <svg
-                                class="icon-lg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                            <!-- Microphone -->
+                            <button
+                                class="control-btn"
+                                :class="{ active: mediaState.micEnabled }"
+                                @click="toggleMic"
+                                :title="mediaState.micEnabled ? 'Tắt mic' : 'Bật mic'"
                             >
-                                <template v-if="mediaState.micEnabled">
-                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                                    <line x1="12" x2="12" y1="19" y2="22" />
-                                </template>
-                                <template v-else>
-                                    <path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2" />
-                                    <path d="M5 10v2a7 7 0 0 0 12 5" />
-                                    <line x1="2" x2="22" y1="2" y2="22" />
-                                </template>
-                            </svg>
-                        </button>
+                                <svg
+                                    class="icon-md"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <template v-if="mediaState.micEnabled">
+                                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                        <line x1="12" x2="12" y1="19" y2="22" />
+                                    </template>
+                                    <template v-else>
+                                        <path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2" />
+                                        <path d="M5 10v2a7 7 0 0 0 12 5" />
+                                        <line x1="2" x2="22" y1="2" y2="22" />
+                                    </template>
+                                </svg>
+                            </button>
 
-                        <!-- Screen share -->
-                        <button
-                            class="control-btn"
-                            :class="{ active: mediaState.isScreenSharing }"
-                            @click="toggleScreenShare"
-                            title="Chia sẻ màn hình"
-                        >
-                            <svg
-                                class="icon-lg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                            <!-- Screen share -->
+                            <button
+                                class="control-btn"
+                                :class="{ active: mediaState.isScreenSharing }"
+                                @click="toggleScreenShare"
+                                title="Chia sẻ màn hình"
                             >
-                                <template v-if="mediaState.isScreenSharing">
-                                    <rect width="20" height="14" x="2" y="3" rx="2"></rect>
-                                    <line x1="8" x2="16" y1="21" y2="21"></line>
-                                    <line x1="12" x2="12" y1="17" y2="21"></line>
-                                </template>
-                                <template v-else>
-                                    <rect width="20" height="14" x="2" y="3" rx="2"></rect>
-                                    <path d="M10 13l2-2 2 2"></path>
-                                </template>
-                            </svg>
-                        </button>
+                                <svg
+                                    class="icon-md"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <template v-if="mediaState.isScreenSharing">
+                                        <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+                                        <line x1="8" x2="16" y1="21" y2="21"></line>
+                                        <line x1="12" x2="12" y1="17" y2="21"></line>
+                                    </template>
+                                    <template v-else>
+                                        <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+                                        <path d="M10 13l2-2 2 2"></path>
+                                    </template>
+                                </svg>
+                            </button>
 
-                        <!-- Leave -->
-                        <button
-                            class="control-btn danger"
-                            @click="onLeaveClassroom"
-                            title="Rời khỏi lớp học"
-                        >
-                            <svg
-                                class="icon-lg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                            <!-- Fullscreen Toggle -->
+                            <button
+                                class="control-btn"
+                                @click="toggleFullscreen"
+                                :title="uiState.isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'"
                             >
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                            </svg>
-                        </button>
-                    </div>
+                                <svg
+                                    class="icon-md"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <template v-if="uiState.isFullscreen">
+                                        <path d="M8 3v3a2 2 0 0 1-2 2H3"></path>
+                                        <path d="M21 8h-3a2 2 0 0 1-2-2V3"></path>
+                                        <path d="M3 16h3a2 2 0 0 1 2 2v3"></path>
+                                        <path d="M16 21v-3a2 2 0 0 1 2-2h3"></path>
+                                    </template>
+                                    <template v-else>
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                                        <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+                                        <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                                        <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                                    </template>
+                                </svg>
+                            </button>
+
+                            <!-- Leave -->
+                            <button
+                                class="control-btn danger"
+                                @click="onLeaveClassroom"
+                                title="Rời khỏi lớp học"
+                            >
+                                <svg
+                                    class="icon-md"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                            </button>
+
+                            <div class="separator"></div>
+
+                            <!-- Hide Controls -->
+                            <button class="control-btn secondary" @click="uiState.areControlsVisible = false" title="Ẩn thanh công cụ">
+                                <svg class="icon-md" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </Transition>
+
+                    <Transition name="fade">
+                        <div class="floating-controls-wrapper mini" v-if="!uiState.areControlsVisible">
+                             <button class="control-btn" @click="uiState.areControlsVisible = true" title="Hiện thanh công cụ">
+                                <svg class="icon-md" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </Transition>
                 </div>
             </div>
         </div>
@@ -874,11 +983,21 @@ defineExpose({
 </template>
 
 <style scoped>
-/* Main Container */
+/* Global Reset for this component */
+* {
+    box-sizing: border-box;
+}
+
+/* Main Container - Dark Theme for Video Call */
 .classroom-container {
-    padding: 1rem;
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    background-color: #0f172a; /* Slate 900 */
+    background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 75%);
+    color: #f8fafc;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Access Denied Styles */
@@ -886,56 +1005,73 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
-    max-height: 100vh;
+    height: 100%;
     padding: 2rem;
+    background: #0f172a;
 }
 
 .access-denied-content {
     text-align: center;
-    max-width: 600px;
+    max-width: 500px;
     padding: 3rem;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .access-denied-icon {
     color: #ef4444;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 50%;
     animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
 }
 
 .access-denied-title {
-    color: #1f2937;
+    color: #f1f5f9;
     margin-bottom: 1rem;
-    font-size: var(--font-size-heading-4);
+    font-size: 1.5rem;
     font-weight: 700;
+    letter-spacing: -0.025em;
 }
 
 .access-denied-message {
-    color: #6b7280;
+    color: #94a3b8;
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
     line-height: 1.6;
 }
 
 .access-denied-subtitle {
-    color: #9ca3af;
+    color: #64748b;
     margin-bottom: 2rem;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+}
+
+.access-denied-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.access-denied-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
 }
 
 /* Main Classroom Interface */
@@ -943,324 +1079,265 @@ defineExpose({
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    padding: 1rem;
+    gap: 1rem;
+    max-width: 1920px;
     margin: 0 auto;
     width: 100%;
+    height: 100%;
 }
 
 /* Header Section */
 .classroom-header {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 16px;
-    padding: 1.3rem;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.6);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex: 1;
+}
+
+.classroom-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.classroom-subtitle {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .fancy-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.375rem 0.75rem;
     border-radius: 999px;
-    background: rgba(15, 23, 42, 0.04);
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    color: #334155;
-}
-
-.connection-status .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: #ef4444;
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-    transition: all 0.3s ease;
-}
-
-.connection-status.online .dot {
-    background: #10b981;
-    animation: ping 1.8s infinite;
-}
-
-@keyframes ping {
-    0% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
-    }
-
-    70% {
-        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-    }
-}
-
-.status-text {
-    font-weight: 600;
-    color: #1f2937;
-    font-size: var(--font-size-small);
-}
-
-.classroom-info {
-    flex: 1;
-}
-
-.classroom-title {
-    font-size: var(--font-size-medium);
-    font-weight: 800;
-    color: #111827;
-    margin: 0 0 0.2rem 0;
-}
-
-.classroom-subtitle {
-    color: #6b7280;
-    margin: 0;
-    font-size: var(--font-size-base);
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.participants-info {
-    color: #92400e;
-    font-size: var(--font-size-small);
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .participants-icon {
-    color: #d97706;
+    color: #fbbf24;
 }
 
-.count {
-    font-weight: 600;
-}
-
-.label {
-    font-size: 0.9rem;
-}
-
-.header-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.action-btn {
-    width: 40px;
-    height: 40px;
+.settings-btn {
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    color: #6b7280;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.4);
+    color: #cbd5e1;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
 
-.action-btn:hover {
-    transform: translateY(-1px);
+.settings-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
 }
 
 /* Video Section */
 .video-section {
-    position: relative;
     flex: 1;
+    position: relative;
     min-height: 0;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 16px;
-    padding: 1rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    overflow: hidden;
+    background: #020617; /* Darker background for video area */
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
 }
 
 .video-grid {
+    width: 100%;
+    height: 100%;
     display: grid;
     gap: 1rem;
-    aspect-ratio: 20/9;
-    margin: 0 auto;
+    padding: 1rem;
+    transition: all 0.3s ease;
 }
 
 /* Layout Modes */
 .video-grid.layout-split {
     grid-template-columns: 1fr 1fr;
+    align-items: center;
 }
 
 .video-grid.layout-pinned {
-    position: relative;
     grid-template-columns: 1fr;
-}
-
-.video-grid.layout-pinned .is-secondary {
-    position: absolute;
-    right: 1rem;
-    bottom: 1rem;
-    width: 22%;
-	height: 22%;
-    max-width: 360px;
-    min-width: 150px;
-    z-index: 3;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-    border-radius: 12px;
-    overflow: hidden;
+    grid-template-rows: 1fr;
 }
 
 .video-container {
     position: relative;
-    border-radius: 12px;
+    width: 100%;
+    height: 100%;
+    background: #1e293b;
+    border-radius: 16px;
     overflow: hidden;
-    background: #0b1020;
-    box-shadow: 0 8px 25px rgba(2, 8, 23, 0.25);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
 }
 
-.video-container:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(2, 8, 23, 0.35);
+/* Pinned Layout Specifics */
+.video-grid.layout-pinned .is-primary {
+    z-index: 1;
+}
+
+.video-grid.layout-pinned .is-secondary {
+    position: absolute;
+    right: 2rem;
+    bottom: 6rem; /* Space for controls */
+    width: 280px;
+    height: 158px;
+    z-index: 20;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    border-radius: 12px;
 }
 
 .video-wrapper {
-    position: relative;
     width: 100%;
     height: 100%;
+    position: relative;
+    background: #000;
 }
 
 .video-element {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain; /* Ensure video isn't cut off */
     background: #000;
 }
 
+/* Video Overlays */
 .video-overlay {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(2, 6, 23, 0.7) 0%, rgba(2, 6, 23, 0.5) 100%);
-    color: white;
+    background: #1e293b;
+    z-index: 2;
 }
 
 .overlay-content {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #64748b;
 }
 
 .overlay-icon {
-    color: #9ca3af;
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
 }
 
 .overlay-text {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
+/* In-Video Controls (Hover) */
+.layout-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.video-container:hover .layout-controls {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.layout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.layout-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.layout-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Video Labels & Badges */
 .video-controls {
     position: absolute;
     bottom: 0;
     left: 0;
-    padding: 0.85rem;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 0.5rem;
-}
-
-/* Layout controls */
-.layout-controls {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    display: flex;
-    gap: 0.5rem;
-    /* padding: 0.5rem; */
-    opacity: 0;
-    transform: translateY(-6px);
-    transition: all 0.25s ease;
-    pointer-events: none;
-}
-
-.local-video:hover .layout-controls,
-.local-video:focus-within .layout-controls,
-.remote-video:hover .layout-controls,
-.remote-video:focus-within .layout-controls {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-.layout-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.6rem;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
-    color: #111827;
-    border-radius: 999px;
-    font-size: var(--font-size-mini);
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.layout-btn:hover {
-    border-color: rgba(255, 255, 255, 0.45);
-    transform: translateY(-1px);
-}
-
-.layout-btn.active {
-    color: #111827;
-    background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
-}
-
-.video-badges {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.mute-badge {
-    background: #ef4444;
-    color: white;
+    z-index: 5;
 }
 
 .video-label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
 }
 
 .label-text {
-    color: white;
-    font-weight: 600;
-    font-size: var(--font-size-small);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 .label-indicator {
@@ -1269,164 +1346,235 @@ defineExpose({
     border-radius: 50%;
 }
 
-.label-indicator.local {
-    background: #10b981;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-}
+.label-indicator.local { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.label-indicator.remote { background: var(--color-primary); box-shadow: 0 0 8px var(--color-primary); }
 
-.label-indicator.remote {
-    background: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-}
-
-/* Floating controls */
-.floating-controls {
-    width: 100%;
+.mute-badge {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    padding: 0.35rem;
+    border-radius: 6px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
+}
+
+/* Floating Control Bar */
+.floating-controls {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    width: auto;
 }
 
 .floating-controls-wrapper {
     display: flex;
-    gap: 0.6rem;
-    background: rgba(17, 24, 39, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(8px);
-    border-radius: 999px;
-    padding: 0.8rem 0.7rem;
-    box-shadow: 0 12px 32px rgba(2, 8, 23, 0.35);
     align-items: center;
-    width: max-content;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.floating-controls-wrapper:hover {
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.5);
 }
 
 .control-btn {
-    display: inline-flex;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%; /* Circular buttons are more modern */
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.6rem 0.8rem;
-    border-radius: 999px;
-    color: #e5e7eb;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
 }
 
 .control-btn:hover {
-    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+    color: #fff;
 }
 
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+/* Active State (e.g., Mic On) - Optional: Invert logic if preferred, but standard is:
+   Gray/Red = Off/Problem
+   Color/White = On/Active
+   Here we use:
+   - Default (Gray): Off/Neutral
+   - Active (Blue/Green): On
+   - Danger (Red): Hangup
+*/
+
+/* Specific Button States */
 .control-btn.active {
-    color: #111827;
-    background: #ffffff;
-    border-color: #ffffff;
-}
-
-.control-btn.danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--color-primary);
     color: white;
 }
 
-.btn-icon {
-    flex-shrink: 0;
+/* For Mic/Cam, usually "Active" means ON. 
+   If the user wants "Active" to mean "Muted" (red), we can adjust.
+   Based on template logic: :class="{ active: mediaState.micEnabled }"
+   So Active = Enabled = Good.
+*/
+
+.control-btn.danger {
+    background: #ef4444;
+    color: white;
+    border-radius: 32px;
+}
+
+.control-btn.danger:hover {
+    background: #dc2626;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Tooltips */
+.control-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    padding: 0.4rem 0.8rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 1;
+}
+
+/* Fullscreen Mode */
+.video-section.is-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    border-radius: 0;
+    background: #000;
+}
+
+.video-section.is-fullscreen .video-grid {
+    padding: 0;
+    height: 100%;
+}
+
+.video-section.is-fullscreen .floating-controls {
+    bottom: 3rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.video-section.is-fullscreen:hover .floating-controls {
+    opacity: 1;
+}
+
+/* Transitions */
+.slide-up-enter-active,
+.slide-up-leave-active {
+    transition: all 0.3s ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Separator */
+.separator {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 0.25rem;
+}
+
+.control-btn.secondary {
+    background: transparent;
+    border: none;
+}
+.control-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive Design */
-
-/* Tablet (768px - 1024px) - Giống desktop */
-
-/* Mobile (< 768px) */
 @media (max-width: 1024px) {
-    .classroom-container {
-        padding: 0;
-        height: 90vh;
-    }
-
     .classroom-main {
-        height: 100%;
-        gap: 0.5rem;
         padding: 0.5rem;
     }
-
-    .classroom-header {
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding: 0.85rem 1rem;
-        flex-shrink: 0;
-        height: max-content;
+    
+    .video-grid.layout-split {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
     }
 
-    .header-left {
+    .video-grid.layout-pinned .is-secondary {
+        width: 120px;
+        height: 160px; /* Portrait on mobile usually */
+        right: 1rem;
+        bottom: 6rem;
+    }
+    
+    .floating-controls-wrapper {
+        padding: 0.5rem 1rem;
+        gap: 0.5rem;
+    }
+    
+    .control-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .control-btn.danger {
+        width: 50px;
+    }
+}
+
+@media (max-width: 640px) {
+    .classroom-header {
+        padding: 0.75rem;
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
     }
-
+    
     .header-right {
         width: 100%;
         justify-content: space-between;
     }
-
-    .video-section {
-        flex: 1;
-        min-height: 0;
-        padding: 0.5rem;
-        border-radius: 12px;
-    }
-
-    .video-grid {
-        max-height: none !important;
-    }
-
-    .video-grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem;
-        aspect-ratio: unset;
-        max-height: unset;
-        height: 100%;
-    }
-
-    /* Mobile: Chỉ cho phép pinned mode, không có 50/50 */
-    .video-grid.layout-split {
-        grid-template-rows: 50% 50%;
-    }
-
-    /* Mobile: Pinned mode giống desktop - màn hình nhỏ ở góc phải */
-    .video-grid.layout-pinned {
-        position: relative;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-    }
-
-    .video-grid.layout-pinned .is-primary {
-        width: 100%;
-        height: 100%;
-    }
-
+    
     .video-grid.layout-pinned .is-secondary {
-        position: absolute;
-        right: 1rem;
-        bottom: 1rem;
-        width: 22%;
-        z-index: 3;
-        border: 2px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-        border-radius: 12px;
-        overflow: hidden;
+        width: 100px;
+        height: 140px;
+        bottom: 5rem;
     }
-
-    /* Ẩn nút 50/50 trên mobile */
-    .local-video .layout-controls .layout-btn:first-child {
-        display: none;
-    }
-
-    .access-denied-content {
-        padding: 1.5rem;
-        max-width: 100%;
-    }
-
 }
 </style>

@@ -42,6 +42,7 @@ export { useNotification } from '../composables/useNotification';
 export { usePay } from '../composables/usePay';
 export { useSessionService } from '../composables/useSessionService';
 export { useConfigStore } from '../stores/config';
+export { useLayoutStore } from '../stores/layout';
 export { useNotificationStore } from '../stores/notification';
 export { useUserStore } from '../stores/user';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';

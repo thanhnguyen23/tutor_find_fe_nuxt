@@ -72,15 +72,6 @@ export const notification_type = {
     warning: 'warning'
 };
 
-export const notification_type_label = {
-    schedule: 'Lịch học',
-    message: 'Tin nhắn',
-    review: 'Đánh giá',
-    profile: 'Hồ sơ',
-    payment: 'Thanh toán',
-    warning: 'Cảnh báo'
-};
-
 // SVG icons for notification types
 export const notification_type_icons = {
     schedule: {

@@ -89,7 +89,6 @@ export const userMenuItems = [
 			'M15 12a3 3 0 11-6 0 3 3 0 016 0z'
 		],
 		iconViewBox: '0 0 24 24',
-		is_user: true,
 		requiresAuth: true,
 	},
 	{

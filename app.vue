@@ -3,8 +3,9 @@ import { onMounted } from 'vue'
 
 // Fetch configuration trên server bằng useAsyncData
 const configStore = useConfigStore()
+const { verifyToken } = useAuth();
 const { api } = useApi()
-const { verifyToken } = useAuth()
+const isLoading = ref(false)
 
 const { data: configuration } = await useAsyncData(
 	'app-configuration',
@@ -19,22 +20,25 @@ const { data: configuration } = await useAsyncData(
 		}
 	},
 	{
-		server: false,
+		server: true,
 		lazy: false
 	}
 )
 
 onMounted(async () => {
-	process.client && await verifyToken();
+	isLoading.value = true
+	await verifyToken();
+	isLoading.value = false
 })
 </script>
 
 <template>
+	<base-loading v-if="isLoading"></base-loading>
 
-<div>
-	<NuxtLayout>
-		<NuxtPage />
-	</NuxtLayout>
-	<Notification />
-</div>
+	<div>
+		<NuxtLayout>
+			<NuxtPage />
+		</NuxtLayout>
+		<Notification />
+	</div>
 </template>

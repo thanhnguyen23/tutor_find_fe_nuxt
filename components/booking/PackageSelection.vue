@@ -154,8 +154,7 @@
             </div>
             <div class="action">
                 <button class="btn-md border-r-2 btn-secondary" @click="handleBack">Quay lại</button>
-                <button class="btn-md border-r-2 btn-primary" @click="handleNext" :disabled="isSelfBooking">Tiếp tục <i class="fas fa-arrow-right"></i></button>
-                <div v-if="isSelfBooking" class="alert alert-danger mt-2">Bạn không thể đặt lịch với chính mình!</div>
+                <button class="btn-md border-r-2 btn-primary" @click="handleNext">Tiếp tục <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
@@ -348,8 +347,6 @@ const bookingData = ref({
 
 const isPackage = ref(false)
 const selected = ref(null)
-const myUid = computed(() => userStore.getUserData?.uid)
-const isSelfBooking = computed(() => props.tutorInfo?.uid === myUid.value)
 
 // ============================
 // Computed properties

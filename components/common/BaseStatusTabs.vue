@@ -31,10 +31,17 @@ const handleSelectChange = (value) => {
 
 // Convert tabs to options format for BaseSelect
 const selectOptions = computed(() => {
-    return props.tabs.map(tab => ({
-        id: tab.value,
-        name: `${tab.label}${tab.count !== undefined ? ` (${tab.count})` : ''}`
+    const list_tabs = props.tabs.map(tab => ({
+        id: tab.value || tab.id,
+        name: tab.label || tab.name
     }));
+
+	list_tabs.unshift({
+		id: 'all',
+		name: 'Tất cả'
+	});
+
+    return list_tabs;
 });
 
 // Check scroll position and update arrow visibility
@@ -193,12 +200,11 @@ onUnmounted(() => {
             <div ref="tabsWrapper" class="tabs-wrapper">
                 <button
                     v-for="tab in tabs"
-                    :key="tab.value"
+                    :key="tab.value || tab.id"
                     :class="{ active: modelValue === tab.value }"
                     @click="handleTabClick(tab.value)"
                 >
-                    {{ tab.label }}
-                    <span v-if="tab.count !== undefined">({{ tab.count }})</span>
+                    {{ tab.label || tab.name }}
                 </button>
             </div>
         </div>
@@ -355,14 +361,14 @@ onUnmounted(() => {
     border: none;
     background: transparent;
     color: #64748b;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    font-size: 0.95rem;
+    font-size: var(--font-size-small);
     border-radius: 8px;
     white-space: nowrap;
     position: relative;

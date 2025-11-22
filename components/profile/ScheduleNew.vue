@@ -138,6 +138,7 @@
     <base-modal
         :is-open="showAddTimeSlotModal"
         title="Thêm khung giờ"
+		description="Khung giờ là thời gian bạn có thể dạy hoặc học"
         size="medium"
         @close="showAddTimeSlotModal = false"
     >
@@ -157,13 +158,7 @@
                         type="text"
                         class="search-input"
                         placeholder="Lọc khung giờ..."
-                    >
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    ></base-input>
                     <div class="actions">
                         <button type="button" class="btn-md btn-secondary" @click="selectAllFiltered">Chọn tất cả</button>
                     </div>

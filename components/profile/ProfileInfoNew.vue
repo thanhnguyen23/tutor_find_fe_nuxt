@@ -433,70 +433,28 @@ const isVideoIntroValid = computed(() => {
                 </svg>
             </div>
         </div>
-        <base-modal :is-open="showPersonalInfoModal" title="Thông Tin Cá Nhân" @close="showPersonalInfoModal = false">
+        <base-modal :is-open="showPersonalInfoModal" title="Thông Tin Cá Nhân" description="Thông tin cá nhân là thông tin chính xác nhất về bạn, giúp khách hàng hiểu rõ hơn về bạn và chọn bạn để dạy con của họ" @close="showPersonalInfoModal = false">
             <div class="form-grid">
                 <div class="form-group">
-                    <base-input v-model="form.first_name" required="true" label="Họ" placeholder="Nguyễn" :error="formErrors.first_name" @update:modelValue="clearError('first_name')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    <base-input v-model="form.first_name" required="true" label="Họ" placeholder="Nguyễn" :error="formErrors.first_name" @update:modelValue="clearError('first_name')"></base-input>
                 </div>
                 <div class="form-group">
-                    <base-input v-model="form.last_name" required="true" label="Tên" placeholder="Văn A" :error="formErrors.last_name" @update:modelValue="clearError('last_name')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    <base-input v-model="form.last_name" required="true" label="Tên" placeholder="Văn A" :error="formErrors.last_name" @update:modelValue="clearError('last_name')"></base-input>
                 </div>
                 <div class="form-group">
-                    <base-select v-model="form.sex" required="true" :options="genderOptions" label="Giới tính" placeholder="Chọn giới tính" :error="formErrors.sex" @update:modelValue="clearError('sex')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </template>
-                    </base-select>
+                    <base-select v-model="form.sex" required="true" :options="genderOptions" label="Giới tính" placeholder="Chọn giới tính" :error="formErrors.sex" @update:modelValue="clearError('sex')"></base-select>
                 </div>
                 <div class="form-group">
-                    <base-input v-model="form.phone" required="true" label="Số điện thoại" placeholder="0123456789" :error="formErrors.phone" @update:modelValue="clearError('phone')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    <base-input v-model="form.phone" required="true" label="Số điện thoại" placeholder="0123456789" :error="formErrors.phone" @update:modelValue="clearError('phone')"></base-input>
                 </div>
                 <div class="form-group">
-                    <base-input v-model="form.email" required="true" label="Email" placeholder="example@email.com" type="email" :error="formErrors.email" @update:modelValue="clearError('email')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    <base-input v-model="form.email" required="true" label="Email" placeholder="example@email.com" type="email" :error="formErrors.email" @update:modelValue="clearError('email')"></base-input>
                 </div>
                 <div class="form-group">
-                    <base-input v-model="form.cccd" label="Số CCCD" placeholder="001234567890" :error="formErrors.cccd" @update:modelValue="clearError('cccd')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    <base-input v-model="form.cccd" label="Số CCCD" placeholder="001234567890" :error="formErrors.cccd" @update:modelValue="clearError('cccd')"></base-input>
                 </div>
                 <div class="form-group">
                     <base-select v-model="form.provinces_id" :options="provinceOptions" label="Tỉnh/Thành phố" placeholder="Chọn tỉnh/thành phố" :error="formErrors.provinces_id" @update:modelValue="clearError('provinces_id')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </template>
                     </base-select>
                 </div>
 
@@ -529,11 +487,9 @@ const isVideoIntroValid = computed(() => {
             </div>
             <div class="modal-footer">
                 <button class="btn-md btn-primary" @click="saveProfile" :disabled="!isPersonalInfoValid">
-                    <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                        <polyline points="7,3 7,8 15,8"></polyline>
-                    </svg>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polyline points="20,6 9,17 4,12"></polyline>
+					</svg>
                     <span>Lưu thay đổi</span>
                 </button>
             </div>
@@ -561,16 +517,10 @@ const isVideoIntroValid = computed(() => {
                 </svg>
             </div>
         </div>
-        <base-modal :is-open="showVideoModal" title="Video Giới Thiệu" @close="showVideoModal = false">
+        <base-modal :is-open="showVideoModal" title="Video Giới Thiệu" description="Video giới thiệu là video giới thiệu bản thân, giúp khách hàng hiểu rõ hơn về bạn và chọn bạn để dạy con của họ" @close="showVideoModal = false">
             <div class="main-content">
                 <div class="form-group full-width">
-                    <base-input v-model="form.referral_link" label="Link YouTube *" placeholder="https://www.youtube.com/watch?v=..." :error="formErrors.referral_link" @update:modelValue="clearError('referral_link')">
-                        <template #icon>
-                            <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                            </svg>
-                        </template>
-                    </base-input>
+                    <base-input v-model="form.referral_link" label="Link YouTube *" placeholder="https://www.youtube.com/watch?v=..." :error="formErrors.referral_link" @update:modelValue="clearError('referral_link')"></base-input>
                 </div>
                 <div v-if="youtubeEmbedUrl" class="youtube-preview">
                     <iframe :src="youtubeEmbedUrl" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
@@ -605,17 +555,15 @@ const isVideoIntroValid = computed(() => {
 
             <div class="modal-footer">
                 <button class="btn-md btn-primary" @click="saveProfile" :disabled="!isVideoIntroValid">
-                    <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                        <polyline points="7,3 7,8 15,8"></polyline>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polyline points="20,6 9,17 4,12"></polyline>
+					</svg>
                     <span>Lưu thay đổi</span>
                 </button>
             </div>
         </base-modal>
 
-        <base-modal :is-open="showProfileDescriptionModal" title="Giới thiệu bản thân" @close="showProfileDescriptionModal = false">
+        <base-modal :is-open="showProfileDescriptionModal" title="Giới thiệu bản thân" description="Giới thiệu bản thân là thông tin chính xác nhất về bạn, giúp khách hàng hiểu rõ hơn về bạn và chọn bạn để dạy con của họ" @close="showProfileDescriptionModal = false">
             <div class="form-grid">
                 <div class="form-group">
                     <base-input v-model="form.about_you" type="textarea" rows="6" required="true" label="Giới thiệu bản thân" placeholder="Xin chào tôi tên là..." :error="formErrors.about_you"></base-input>
@@ -654,11 +602,9 @@ const isVideoIntroValid = computed(() => {
 
             <div class="modal-footer">
                 <button class="btn-md btn-primary" @click="saveProfile" :disabled="!isProfileDescriptionValid">
-                    <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                        <polyline points="7,3 7,8 15,8"></polyline>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polyline points="20,6 9,17 4,12"></polyline>
+					</svg>
                     <span>Lưu thay đổi</span>
                 </button>
             </div>

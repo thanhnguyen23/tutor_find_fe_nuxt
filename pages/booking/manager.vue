@@ -11,6 +11,7 @@ import BookingCardList from '~/components/booking/BookingCardList.vue'
 
 const router = useRouter()
 const { api } = useApi()
+const layoutStore = useLayoutStore()
 const { success, error: notifyError } = useNotification()
 const { status_booking: statusBooking, complaint_types } = useConfig()
 const configStore = useConfigStore()
@@ -42,9 +43,9 @@ const isLoading = ref(false)
 
 const bookings = ref([])
 const dataPaginate = ref({})
-const statusMap = ref(configStore.configuration.booking_status || {})
-const listStatusComplaint = ref(configStore.configuration.booking_complaint_status || {})
-const listComplaintTypes = ref(complaint_types || [])
+const statusMap = computed(() => configStore.configuration.booking_status || {})
+const listStatusComplaint = computed(() => configStore.configuration.booking_complaint_status || {})
+const listComplaintTypes = computed(() => complaint_types || [])
 
 const modals = ref({
     reject: false,
@@ -146,18 +147,7 @@ const isPageLoading = computed(() => isLoading.value || isInitialLoading.value)
 // COMPUTED
 const userData = computed(() => userStore.getUserData)
 const isTutor = computed(() => userData.value.role === 1)
-
-const tabs = computed(() => [{
-        value: 'all',
-        label: 'Tất cả'
-    },
-    ...Object.entries(statusMap.value || []).map(([key, value]) => {
-        return {
-            value: key,
-            label: value
-        }
-    })
-])
+const tabs = computed(() => statusMap.value)
 
 
 
@@ -585,6 +575,14 @@ watch(search, () => changePage(1))
 watch(() => forms.value.reschedule.new_date, (newDate) => {
     if (newDate) forms.value.reschedule.new_time_slot_id = ''
 })
+
+onMounted(() => {
+    layoutStore.setHiddenFooter(true);
+})
+
+onUnmounted(() => {
+    layoutStore.setHiddenFooter(false);
+})
 </script>
 
 <template>
@@ -596,13 +594,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
         <p class="desc">Quản lý và theo dõi tất cả các buổi học của bạn</p>
 
         <div class="booking-manager-toolbar">
-            <base-input v-model="search" placeholder="Tìm kiếm theo tên gia sư, môn học hoặc mã đặt lịch...">
-                <template #icon>
-                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </template>
-            </base-input>
+            <base-input v-model="search" placeholder="Tìm kiếm theo tên gia sư, môn học hoặc mã đặt lịch..."></base-input>
         </div>
 
         <base-status-tabs v-model="status" :tabs="tabs" />
@@ -626,7 +618,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
     </div>
 
     <!-- All Modals Below -->
-    <base-modal v-if="showLogsModal" :isOpen="showLogsModal" @close="showLogsModal = false" title="Lịch sử trạng thái đặt lịch" size="xl">
+    <base-modal v-if="showLogsModal" :isOpen="showLogsModal" @close="showLogsModal = false" title="Lịch sử trạng thái đặt lịch" description="Lịch sử trạng thái đặt lịch bao gồm các thay đổi trong quá trình đặt lịch" size="xl">
         <div class="booking-logs-container">
             <div v-if="selectedLogs.length === 0" class="empty-logs">
                 <div class="empty-icon">
@@ -690,7 +682,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
     </base-modal>
 
     <!-- Other Modals (Reject, Message, Review, Reschedule, etc.) remain the same -->
-    <base-modal v-if="showRejectModal" :isOpen="showRejectModal" title="Từ chối yêu cầu đặt lịch" @close="showRejectModal = false">
+    <base-modal v-if="showRejectModal" :isOpen="showRejectModal" title="Từ chối yêu cầu đặt lịch" description="Từ chối yêu cầu đặt lịch nếu bạn không muốn tiếp tục" @close="showRejectModal = false">
         <div class="model-reject">
             <base-input type="textarea" v-model="noteCancelled" placeholder="Nhập lý do từ chối (ví dụ: Lịch đã kín, không phù hợp chuyên môn...)"></base-input>
             <div class="modal-footer">
@@ -707,7 +699,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
     <ComplaintModal v-if="showComplaintModal" :isOpen="showComplaintModal" :booking="selectedBooking" :listStatusComplaint="listStatusComplaint" :listComplaintTypes="listComplaintTypes" @complaintSubmitted="handleComplaintSubmitted" @close="showComplaintModal = false" />
 
     <!-- Modal chuyển lịch học -->
-    <base-modal v-if="showRescheduleModal" :isOpen="showRescheduleModal" @close="showRescheduleModal = false" title="Chuyển lịch học" size="large">
+    <base-modal v-if="showRescheduleModal" :isOpen="showRescheduleModal" @close="showRescheduleModal = false" title="Chuyển lịch học" description="Chuyển lịch học nếu bạn muốn thay đổi thời gian học" size="large">
         <div class="reschedule-modal-content">
             <!-- Current Booking Info Card -->
             <div class="info-card">
@@ -920,7 +912,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
     </base-modal>
 
     <!-- Confirmation Modals -->
-    <base-modal v-if="modals.confirmCancel" :isOpen="modals.confirmCancel" @close="resetModal('confirmCancel')" title="Xác nhận hủy lịch học" size="small">
+    <base-modal v-if="modals.confirmCancel" :isOpen="modals.confirmCancel" @close="resetModal('confirmCancel')" title="Xác nhận hủy lịch học" description="Xác nhận hủy lịch học nếu bạn không muốn tiếp tục" size="small">
         <div class="confirmation-modal">
             <div class="confirmation-icon">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -961,7 +953,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
         </div>
     </base-modal>
 
-    <base-modal v-if="modals.confirmReject" :isOpen="modals.confirmReject" @close="resetModal('confirmReject')" title="Xác nhận từ chối lịch học" size="small">
+    <base-modal v-if="modals.confirmReject" :isOpen="modals.confirmReject" @close="resetModal('confirmReject')" title="Xác nhận từ chối lịch học" description="Xác nhận từ chối lịch học nếu bạn không muốn tiếp tục" size="small">
         <div class="confirmation-modal">
             <div class="confirmation-icon">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1002,7 +994,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
     </base-modal>
 
     <!-- Refund Modal -->
-    <base-modal v-if="modals.refund" :isOpen="modals.refund" @close="resetModal('refund')" title="Xác nhận hoàn tiền" size="medium">
+    <base-modal v-if="modals.refund" :isOpen="modals.refund" @close="resetModal('refund')" title="Xác nhận hoàn tiền" description="Xác nhận hoàn tiền nếu bạn muốn hoàn tiền" size="medium">
         <div class="refund-confirmation-modal">
             <div class="booking-info-compact">
                 <div class="info-header">
@@ -1078,7 +1070,7 @@ watch(() => forms.value.reschedule.new_date, (newDate) => {
 
 
     <!-- Profile Modal -->
-    <base-modal v-if="showProfileModal" :isOpen="showProfileModal" @close="showProfileModal = false" title="Thông tin cơ bản" size="medium">
+    <base-modal v-if="showProfileModal" :isOpen="showProfileModal" @close="showProfileModal = false" title="Thông tin cơ bản" description="Thông tin cơ bản của người dùng" size="medium">
         <div v-if="selected.profileUser" class="profile-modal-content">
             <div class="profile-header">
                 <div class="profile-avatar-large">

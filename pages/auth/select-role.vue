@@ -293,6 +293,7 @@ const confirmRole = async () => {
             role: selectedRole.value
         };
         userStore.setAuth({
+            token: userStore.token,
             user: updatedUser
         });
 

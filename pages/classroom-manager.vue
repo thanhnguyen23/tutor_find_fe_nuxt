@@ -7,6 +7,7 @@ import { ref, computed, onMounted, watch, watchEffect } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
+const layoutStore = useLayoutStore();
 const { api } = useApi();
 const { success, error: notifyError, warning: notifyWarning, info: notifyInfo } = useNotification();
 const userStore = useUserStore();
@@ -15,7 +16,6 @@ const { canStartClassroom, getParticipantsClass, getStatusClass, formatDateTime,
 // Reactive data
 const search = ref('');
 const status = ref('all');
-const showFilter = ref(false);
 const currentPage = ref(1);
 const classrooms = ref([]);
 const dataPaginate = ref({});
@@ -29,12 +29,7 @@ const userData = computed(() => userStore.getUserData);
 
 // Computed
 const tabs = computed(() => {
-    const arr = [{
-        value: 'all',
-        label: 'Tất cả',
-        count: classrooms.value.length
-    }];
-
+	const arr = [];
     const statusCounts = {};
     classrooms.value.forEach(classroom => {
         statusCounts[classroom.status] = (statusCounts[classroom.status] || 0) + 1;
@@ -330,7 +325,12 @@ const openProfileModal = (user) => {
 onMounted(async () => {
     await initEcho();
     await handleBookingIdFromQuery();
+	layoutStore.setHiddenFooter(true);
 });
+
+onUnmounted(() => {
+	layoutStore.setHiddenFooter(false);
+})
 </script>
 
 <template>
@@ -348,13 +348,7 @@ onMounted(async () => {
 
         <!-- Filter và Search -->
         <div class="classroom-manager-toolbar">
-            <base-input v-model="search" placeholder="Tìm kiếm theo chủ đề, mã booking hoặc tên học viên...">
-                <template #icon>
-                    <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </template>
-            </base-input>
+            <base-input v-model="search" placeholder="Tìm kiếm theo chủ đề, mã booking hoặc tên học viên..."></base-input>
         </div>
 
         <!-- Status Tabs -->
@@ -545,7 +539,7 @@ onMounted(async () => {
     </div>
 
     <!-- Classroom Detail Modal -->
-    <base-modal v-if="showDetailModal" :isOpen="showDetailModal" title="Chi tiết lớp học" @close="showDetailModal = false" size="medium">
+    <base-modal v-if="showDetailModal" :isOpen="showDetailModal" :header="false" @close="showDetailModal = false" size="medium">
         <div v-if="selectedClassroom" class="classroom-detail-content">
             <!-- Header Section -->
             <div class="detail-header">
@@ -933,7 +927,7 @@ onMounted(async () => {
 }
 
 .title-header {
-    font-weight: 900;
+    font-weight: 700;
     font-size: var(--font-size-heading-3);
     margin: 0;
 }

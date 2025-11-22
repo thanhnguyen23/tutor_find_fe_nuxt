@@ -5,7 +5,7 @@
 
 const DEFAULT_COOKIE_OPTIONS = {
 	sameSite: "lax",
-	secure: true,
+	secure: false,
 	httpOnly: false, // FE needs to read
 	path: "/"
 };
